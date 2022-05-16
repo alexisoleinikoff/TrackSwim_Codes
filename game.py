@@ -5,7 +5,7 @@ import random
 GPIO.setmode(GPIO.BCM)
 
 ## Initialisation des variables
-# Input/Output
+# Input / Output
 ledY = 4
 ledB = 27
 button = 17
