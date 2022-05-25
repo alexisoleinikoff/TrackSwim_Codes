@@ -3,7 +3,10 @@ import subprocess
 ssid = "MickeyMouse"
 passkey = "MinnieMouse"
 
-p1 = subprocess.Popen(["wpa_passphrase", ssid, passkey], stdout=subprocess.PIPE)
+p1 = subprocess.Popen(
+["wpa_passphrase", ssid, passkey], 
+    stdout=subprocess.PIPE
+)
 
 p2 = subprocess.Popen(
     ["sudo", "tee", "a", "/etc/wpa_supplicant/wpa_supplicant.conf", ">", "/dev/null"], 
