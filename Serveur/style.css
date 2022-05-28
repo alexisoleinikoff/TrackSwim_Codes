@@ -1,0 +1,29 @@
+h1 {
+    color: #0049FF;
+}
+
+#banner {
+    display: block;;
+}
+
+.imagesL {
+    display: inline-block;
+    max-width: 20%;
+    margin: 0 2.5%;
+    position: absolute;
+    left: 0;
+}
+
+.imagesC {
+    display: inline-block;
+    max-width: 20%;
+    margin: 0 2.5%;
+}
+
+.imagesR {
+    display: inline-block;
+    max-width: 20%;
+    margin: 0 2.5%;
+    position: absolute;
+    right: 0;
+}
