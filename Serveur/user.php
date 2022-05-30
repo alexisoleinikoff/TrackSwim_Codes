@@ -53,6 +53,7 @@
             echo "<h1>Sessions de natation du ".$SESSION_DATE."</h1><BR>";
 
             # récupération des données des performances en faisant tout le cheminement des BD
+            # Ordre : Tags -> Sessions -> Performances
             $tags = $bdd->query("SELECT ID_tag FROM tag WHERE ID_user=".$USER_ID."");
             if ($tags) {
                 foreach ($tags as $tag) {
