@@ -19,13 +19,11 @@
         <!-- Connexion à la base de données -->
         <?php
             include 'path_BD.php';
-            try
-            {
+            try {
                 $bdd = new PDO($mon_Path_BD, $mon_userName, $monPSW);
                 #echo "BD ouverte <BR>";
             }
-            catch (Exception $e)
-            {
+            catch (Exception $e) {
                 die('Erreur : ' . $e->getMessage());
             }
         
@@ -61,7 +59,7 @@
                 </TD>
                 <form name="userForm" action="user.php" method="POST">
                     <TD width="250" align="center" >
-                        <SELECT name="selectPersonne">
+                        <SELECT name="ID_USER">
                             <?php
                                 $listePersonnes = $bdd->query("SELECT ID_utilisateur, Nom, Prenom FROM utilisateur ORDER BY Nom ASC");
 
@@ -70,7 +68,7 @@
                                 }
                             ?>
                         <SELECT> <BR><BR>
-                        <input type="date" /> <BR><BR>
+                        <input type="date" name="SESSION_DATE"/> <BR><BR>
                         <input type="submit" value="Rechercher" />
                     </TD>
                 </form>

@@ -24,13 +24,11 @@
         <?php
             include 'path_BD.php';
 
-            try
-            {
+            try {
                 $bdd = new PDO($mon_Path_BD, $mon_userName, $monPSW);
                 #echo "BD ouverte <BR>";
             }
-            catch (Exception $e)
-            {
+            catch (Exception $e) {
                 die('Erreur : ' . $e->getMessage());
             }
         ?>

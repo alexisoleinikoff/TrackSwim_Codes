@@ -24,13 +24,11 @@
         <?php
             include 'path_BD.php';
 
-            try
-            {
+            try {
                 $bdd = new PDO($mon_Path_BD, $mon_userName, $monPSW);
                 #echo "BD ouverte <BR>";
             }
-            catch (Exception $e)
-            {
+            catch (Exception $e) {
                 die('Erreur : ' . $e->getMessage());
             }
 
@@ -38,19 +36,19 @@
             if($_POST['ADMIN_NAME']) {
                 $ADMIN_NAME = $_POST['ADMIN_NAME'];
                 $ADMIN_PASS = $_POST['ADMIN_PASS'];
-
-                $result = $bdd->query("SELECT ID_admin FROM admin WHERE Identifiant='".$ADMIN_NAME."' AND Mot_de_passe='".$ADMIN_PASS."'");
-                if ($row = $result->fetch()) {
-                    echo "Connexion OK. ID de l'administrateur actuellement connecté : ";
-                    echo $row['ID_admin'];
-                    echo "<BR>";
-                }
-                else {
-                    die("<strong>Connexion éronnée</strong>.<br> Veuillez vérifier votre identifiant et/ou mot de passe (code : 1) <BR>");
-                }
             }
             else {
                 die("<strong>Connexion éronnée</strong>.<br> Veuillez vérifier votre identifiant et/ou mot de passe (code : 2) <BR>");
+            }
+
+            $result = $bdd->query("SELECT ID_admin FROM admin WHERE Identifiant='".$ADMIN_NAME."' AND Mot_de_passe='".$ADMIN_PASS."'");
+            if ($row = $result->fetch()) {
+                echo "Connexion OK. ID de l'administrateur actuellement connecté : ";
+                echo $row['ID_admin'];
+                echo "<BR>";
+            }
+            else {
+                die("<strong>Connexion éronnée</strong>.<br> Veuillez vérifier votre identifiant et/ou mot de passe (code : 1) <BR>");
             }
             ?>
 
