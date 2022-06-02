@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">¨
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
 
     <head>
         <meta charset="utf8">
@@ -51,9 +51,18 @@
             }
 
             echo "<h1>Sessions de natation du ".$SESSION_DATE."</h1><BR>";
+            echo "<strong>Axe horizontal</strong> → Numéro de l'aller-retour [-]<BR>
+                <strong>Axe vertical</strong> → Durée de l'aller-retour [s]";
 
             # récupération des données des performances en faisant tout le cheminement des BD
             # Ordre : Tags -> Sessions -> Performances
+
+            # A DEVELOPPER :
+            # Enlever les tags! à la place, chercher avec le ID_user seulement
+            # Modifier la DB pour afficher le ID_user dans une session et non pas le ID_tag
+            # tag <-> user <-> session <-> perf
+            # table associative pour linker les tags et user
+
             $tags = $bdd->query("SELECT ID_tag FROM tag WHERE ID_user=".$USER_ID."");
             if ($tags) {
                 foreach ($tags as $tag) {
@@ -105,7 +114,7 @@
                                     options: {
                                         legend: {display: false},
                                         scales: {
-                                        yAxes: [{ticks: {min: ".(min($y)-5).", max: ".(max($y)+5)."}}],
+                                        yAxes: [{ticks: {min: 0, max: ".(max($y))."}}],
                                         }
                                     }
                                     });
@@ -138,7 +147,7 @@
                 die("Aucun tag trouvé pour cet Identifiant");
             }
 
-            echo "<br>Nombre de tag : ".$tagAmm."<BR>";
+            echo "<br><br>Nombre de tag : ".$tagAmm."<BR>";
             echo "Nombre de session : ".$sessionAmm."<BR>";
         ?>
 
