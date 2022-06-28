@@ -1,9 +1,10 @@
 import sys
 sys.path.append('/home/tspi/.local/lib/python3.9/site-packages') # Lien vers le dossier de stockage des packages pip3
 import tm1637
+from datetime import timedelta
 import time
 import RPi.GPIO as GPIO
-from TS_f import millis, millis_to_hhmmss
+from TS_f import millis, millis_to_hhmmss, millis_to_mmssms
 
 GPIO.setwarnings(False)
 
@@ -45,6 +46,7 @@ try:
     while True:
         if millis() - t1 > T_UPDATE_SCREEN:
             t1 = millis()
+            tmd.write(tmd.encode_string(millis_to_mmssms(t_initial, millis())))
             tmt.write(tmt.encode_string(millis_to_hhmmss(t_initial, millis())))
 
 except KeyboardInterrupt:
