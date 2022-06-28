@@ -159,7 +159,7 @@ class TM1637(object):
 
         # Vérification de la longueur du string (temps ou chiffre?)
         if(len(string) == 8):
-            string = string.replace('.', '')
+            string = string.replace(':', '')
             isTime = True
             
         l = len(string)
@@ -167,7 +167,7 @@ class TM1637(object):
         # Si la longueur n'est pas correcte pour un chiffre ou temps n'est pas correcte -> erreur    
         if(l > MAX_DISP_LENGTH):
             if not (isTime):
-                raise ValueError("Seuls les string au format 'aa.bb.cc' peuvent dépasser la longueur de 6.Veuillez vérifier si le string doit être un chiffre ou temps.")
+                raise ValueError("Seuls les string au format 'aa:bb:cc' peuvent dépasser la longueur de 6.Veuillez vérifier si le string doit être un chiffre ou temps.")
 
         # Création du string de segments
         segments = deque(bytearray(MAX_DISP_LENGTH))
