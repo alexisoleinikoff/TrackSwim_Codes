@@ -30,3 +30,28 @@ def millis_to_mmssms(t_initial, t_fin):
     if len(x) < 8:
         x = x + ':00'
     return x
+
+# Vérifie si un EPC existe déjà dans la liste lst de stockage
+# Trie aussi parmis les sessions fermées et ouvertes et ne
+# renvoie l'index que de la session ouverte
+# Arguments : LISTE de SESSION lst, INT EPC
+# Retourne : INT j, l'index
+def EPC_exist(lst, EPC):
+    i = None
+    for j in range(len(lst)):
+        if lst[j].EPC == EPC and lst[j].session_end != None:
+            i = i
+            break
+    return i
+
+class session():
+    def __init__(self, EPC, session_start, session_end=None):
+        self.EPC = EPC
+
+        self.session_start = session_start
+        self.session_end = session_end
+
+        self.depart = []
+        self.arrivee = []
+        
+
