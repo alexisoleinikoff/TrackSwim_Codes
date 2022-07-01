@@ -57,12 +57,6 @@
             # récupération des données des performances en faisant tout le cheminement des BD
             # Ordre : Tags -> Sessions -> Performances
 
-            # A DEVELOPPER :
-            # Enlever les tags! à la place, chercher avec le ID_user seulement
-            # Modifier la DB pour afficher le ID_user dans une session et non pas le ID_tag
-            # tag <-> user <-> session <-> perf
-            # table associative pour linker les tags et user
-
             $sessions = $bdd->query("SELECT ID_session FROM session WHERE ID_user=".$USER_ID." AND Debut=\"".$SESSION_DATE."\"");
             if ($sessions) {
                 foreach ($sessions as $session) {

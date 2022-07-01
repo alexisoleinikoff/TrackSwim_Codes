@@ -1,5 +1,8 @@
+### FICHIER DES FONCTIONS ET CLASSES ###
+
 from datetime import timedelta
 import time
+import config
 
 # Fonction renvoyant le temps écoulé, en milisecondes, depuis 1970
 # Arguments : NULL
@@ -43,6 +46,21 @@ def EPC_exist(lst, EPC):
             i = i
             break
     return i
+
+# Interrupt bouton 1
+def button1_callback(channel):
+    config.flagButton1 = True
+
+# Interrupt bouton 2
+def button2_callback(channel):
+    config.flagButton2 = True
+
+
+class rgb():
+    def __initi__(self, r, g, b):
+        self.r = r
+        self.g = g
+        self.b = b
 
 class session():
     def __init__(self, EPC, session_start, session_end=None):
