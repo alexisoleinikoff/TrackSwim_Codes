@@ -27,7 +27,7 @@ LED_BLUE = 27
 BUTTON1 = 17
 BUTTON2 = 22
 BUZZER = 18
-led_wifi = rgb(10, 9, 11)
+led_wifi = rgb(r=10, g=9, b=11)
 CLK_GREEN = 3
 DIO_GREEN = 2
 CLK_BLUE = 24
