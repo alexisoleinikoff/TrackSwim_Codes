@@ -55,9 +55,8 @@ def button1_callback(channel):
 def button2_callback(channel):
     config.flagButton2 = True
 
-
 class rgb():
-    def __initi__(self, r, g, b):
+    def __init__(self, r, g, b):
         self.r = r
         self.g = g
         self.b = b
