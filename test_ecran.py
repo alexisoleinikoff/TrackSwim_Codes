@@ -74,7 +74,8 @@ tmb.write([0,0,0,0,0,0]) # valeurs initiales (écran vide)
 tmg.write([0,0,0,0,0,0])
 
 # Variables
-t1, t_initial = millis()
+t1 =millis()
+t_initial = t1
 
 # Test read
 #reader = mercury.Reader("tmr:///dev/ttyS0", baudrate=115200)
