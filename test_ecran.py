@@ -91,11 +91,6 @@ if __name__ == '__main__':
             if(config.flagButton1 or config.flagButton2):
                 #t_initial = millis()
 
-                reader = mercury.Reader("tmr:///dev/ttyS0", baudrate=115200)
-                reader.set_region("EU3")
-                reader.set_read_plan([1], "GEN2", read_power=1900)
-                print(reader.read())
-
                 config.flagButton1 = False
                 config.flagButton2 = False
 
