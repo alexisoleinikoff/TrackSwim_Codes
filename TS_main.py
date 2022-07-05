@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
-                    tmb.write(tmb.encode_string(str(len(stock_tag))+'TAG'))
+                    tmb.write(tmb.encode_string(str(len(stock_tag))+' EPC'))
 
 
     except KeyboardInterrupt:
