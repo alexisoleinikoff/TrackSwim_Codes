@@ -75,7 +75,8 @@ def add_tag(reader, list):
     elif TS_var.etat_ajout_tag == 1: # cas 1 : scanner une fois et enregister les tags dans une liste temporaire
         reader = ini_reader(1000)
         GPIO.output(LED_BLUE, GPIO.HIGH)
-        for tag in reader.read():
+        r = reader.read()
+        for tag in r:
             if not tag.EPC in list:
                 list.append(tag.EPC)
         GPIO.output(LED_BLUE, GPIO.LOW)

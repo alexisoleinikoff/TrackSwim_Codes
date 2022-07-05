@@ -136,8 +136,9 @@ if __name__ == '__main__':
             # Si un changement d'état dans le module -> cleanup avant de changer
             if(TS_var.etat_module != TS_var.old_etat_module):
                 if(TS_var.etat_module): # False -> True : Config -> Continu
-                    pass
+                    print('False -> True, cleaned up')
                 else: # True -> False : Continu -> Config
+                    print('True -> False, cleaned up')
                     reader = ini_reader(MIN_READ_POWER)
 
                 TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
