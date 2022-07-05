@@ -55,10 +55,10 @@
                 <strong>Axe vertical</strong> → Durée de l'aller-retour [s]";
 
             # récupération des données des performances en faisant tout le cheminement des BD
-            # Ordre : Tags -> Sessions -> Performances
+            # Ordre : Utilisateur -> Sessions -> Performances
 
             $sessions = $bdd->query("SELECT ID_session FROM session WHERE ID_user=".$USER_ID." AND Debut=\"".$SESSION_DATE."\"");
-            if ($sessions) {
+            if (!empty($sessions->rowCount())) {
                 foreach ($sessions as $session) {
                     # Récupération ID piscine pour déterminer la longueur totale nagée
                     $pools = $bdd->query("SELECT ID_piscine FROM session WHERE ID_session=".$session["ID_session"]."");
@@ -68,7 +68,7 @@
 
                     # Récupération des allers-retours pour cette session
                     $perfs = $bdd->query("SELECT Depart, Arrivee FROM perf WHERE ID_session=".$session["ID_session"]." ORDER BY ID_perf");
-                    if ($perfs) {
+                    if (!empty($perfs->rowCount())) {
                         # Construction des variables pour le graphique
                         foreach ($perfs as $perf) {
                             $x[$i] = $i+1;
@@ -121,14 +121,14 @@
 
                     }
                     else {
-                        die("Aucun aller-retour trouvé pour ces sessions");
+                        die("<br><br>Aucun aller-retour trouvé pour ces sessions");
                     }
 
                     $sessionAmm++;
                 }
             }
             else {
-                die("Aucune session trouvée pour cet utilisateur à cette date");
+                die("<br><br>Aucune session trouvée pour cet utilisateur à cette date");
             }
 
             #echo "<br><br>Nombre de tag : ".$tagAmm."<BR>";

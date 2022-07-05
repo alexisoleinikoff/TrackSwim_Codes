@@ -16,7 +16,6 @@
     </head>
 
     <body>
-
         <!-- Bannière -->
         <div id="includedBanner"></div>
         <center>
@@ -38,7 +37,7 @@
                 $ADMIN_PASS = $_POST['ADMIN_PASS'];
             }
             else {
-                die("<strong>Connexion éronnée</strong>.<br> Veuillez vérifier votre identifiant et/ou mot de passe (code : 2) <BR>");
+                die("<strong>Connexion erronnée</strong>.<br> Veuillez vérifier votre identifiant et/ou mot de passe (code : 2) <BR>");
             }
 
             $result = $bdd->query("SELECT ID_admin FROM admin WHERE Identifiant='".$ADMIN_NAME."' AND Mot_de_passe='".$ADMIN_PASS."'");
@@ -48,14 +47,14 @@
                 echo "<BR>";
             }
             else {
-                die("<strong>Connexion éronnée</strong>.<br> Veuillez vérifier votre identifiant et/ou mot de passe (code : 1) <BR>");
+                die("<strong>Connexion erronnée</strong>.<br> Veuillez vérifier votre identifiant et/ou mot de passe (code : 1) <BR>");
             }
             ?>
 
             <table border="0">
                 <TR height="20">
                     <TD width="1500" colspan="2" align="left">
-                        <h2>Gestion des utilisateurs</h2>
+                        <h2>> Gestion des utilisateurs</h2>
                     </TD>
                 </TR>
                 <TR height="40">
@@ -64,12 +63,13 @@
                     </TD>
                     <TD colspan="1" align="left">
                         <a href ="DB_utilisateur.php">Visualiser la base de donnée des utilisateurs</a><br><br>
-                        <a href ="DB_utilisateur.php">Ajouter un nouvel utilisateur</a>
+                        <a href ="DB_utilisateur.php">Ajouter un nouvel utilisateur</a><br><br>
+                        <a href ="DB_utilisateur.php">Supprimer un utilisateur</a>
                     </TD>
                 </TR>
                 <TR height="20">
                     <TD width="1500" colspan="2" align="left">
-                        <h2>Gestion des administrateurs</h2>
+                        <h2>> Gestion des administrateurs</h2>
                     </TD>
                 </TR>
                 <TR height="40">
@@ -78,12 +78,13 @@
                     </TD>
                     <TD colspan="1" align="left">
                         <a href ="DB_admin.php">Visualiser la base de donnée des administrateurs</a><br><br>
-                        <a href ="DB_admin.php">Ajouter un nouvel administrateur</a>
+                        <a href ="DB_admin.php">Ajouter un nouvel administrateur</a><br><br>
+                        <a href ="DB_admin.php">Supprimer un administrateur</a>
                     </TD>
                 </TR>
                 <TR height="20">
                     <TD width="1500" colspan="2" align="left">
-                        <h2>Gestion des piscines</h2>
+                        <h2>> Gestion des piscines</h2>
                     </TD>
                 </TR>
                 <TR height="40">
@@ -92,12 +93,13 @@
                     </TD>
                     <TD colspan="1" align="left">
                         <a href ="DB_piscine.php">Visualiser la base de donnée des piscines</a><br><br>
-                        <a href ="DB_piscine.php">Ajouter une nouvelle piscine</a>
+                        <a href ="DB_piscine.php">Ajouter une nouvelle piscine</a><br><br>
+                        <a href ="DB_piscine.php">Supprimer une piscine</a>
                     </TD>
                 </TR>
                 <TR height="20">
                     <TD width="1500" colspan="2" align="left">
-                        <h2>Gestion des bracelets</h2>
+                        <h2>> Gestion des bracelets</h2>
                     </TD>
                 </TR>
                 <TR height="40">

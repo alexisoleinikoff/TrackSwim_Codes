@@ -6,32 +6,42 @@ import os
 import pymysql
 import shutil
 import configparser
+import RPi.GPIO as GPIO
+import mercury
 import TS_var
 
-### FONCTIONS DE TRAITEMENT DES MESURES ###
+### Constantes (dupliquées de TS_main.py)
+LED_YELLOW = 4
+LED_BLUE = 27
 
-# Fonction renvoyant le temps écoulé, en milisecondes, depuis 1970
-# Arguments : NULL
-# Retourne : INTEGER, temps en millisecondes
+### FONCTIONS DE TRAITEMENT DES MESURES ###
 def millis():
+    """Fonction renvoyant le temps écoulé, en milisecondes, depuis le 01.01.1970\n
+    Arguments : NULL
+    Retourne : INTEGER, temps en millisecondes """
+
     return int(time.time()*1000)
 
-# Fonction transformant la différence entre deux temps donnés en millisecondes
-# en un string au format "hh:mm:ss"
-# Arguments : INT Temps 1, INT Temps 2
-# Retourne : STRING au format hh:mm:ss
+
 def millis_to_hhmmss(t_initial, t_fin):
+    """Fonction transformant la différence entre deux temps donnés en millisecondes
+    en un string au format "hh:mm:ss"\n
+    Arguments : INT Temps 1, INT Temps 2
+    Retourne : STRING au format hh:mm:ss """
+
     x = str(timedelta(milliseconds = t_fin - t_initial))
     x = x.split('.')[0]
     if len(x) < 8:
         x = '0' + x
     return x
 
-# Fonction transformant la différence entre deux temps donnés en millisecondes
-# en un string au format "mm:ss:msms"
-# Arguments : INT Temps 1, INT Temps 2
-# Retourne : STRING au format mm:ss:msms
+
 def millis_to_mmssms(t_initial, t_fin):
+    """Fonction transformant la différence entre deux temps donnés en millisecondes
+    en un string au format "mm:ss:msms"\n
+    Arguments : INT Temps 1, INT Temps 2
+    Retourne : STRING au format mm:ss:msms"""
+
     x = str(timedelta(milliseconds = t_fin - t_initial))
     x = x.split(':')
     x = x[1] + ':' + x[2]
@@ -40,21 +50,20 @@ def millis_to_mmssms(t_initial, t_fin):
         x = x + ':00'
     return x
 
-# Vérifie si un EPC existe déjà dans la liste lst de stockage
-# Trie aussi parmis les sessions fermées et ouvertes et ne
-# renvoie l'index que de la session ouverte
-# Arguments : LISTE de SESSION lst, INT EPC
-# Retourne : INT j, l'index
-def EPC_exist(lst, EPC):
-    i = None
-    for j in range(len(lst)):
-        if lst[j].EPC == EPC and lst[j].session_end != None:
-            i = i
-            break
-    return i
+def add_tag():
 
+    if not TS_var.button2_state:
+        pass
+    elif TS_var.button2_state == 1:
+        GPIO.output(LED_BLUE, GPIO.HIGH)
+    else:
+        GPIO.output(LED_YELLOW, GPIO.HIGH)
 
 class session():
+    """ Classe régissant les paramètres d'une session de natation
+    Le paramètre "session_end" est auto-initialisé à None\n
+    Arguments: INT EPC, INT Début de session"""
+
     def __init__(self, EPC, session_start, session_end=None):
         self.EPC = EPC
 
@@ -63,33 +72,36 @@ class session():
 
         self.depart = []
         self.arrivee = []
-
+    
+    def EPC_exists(self, EPC):
+        return True if self.EPC == EPC and self.session_end == None else False
 
 ### FONCTIONS DE CONTRÔLE DU MODULE ###
 class rgb():
+    """ Classe régissant les paramètres des LEDs RGB
+    Arguments : INT GPIO num rouge, INT GPIO num green, INT GPIO num bleu"""
+
     def __init__(self, r, g, b):
         self.r = r
         self.g = g
         self.b = b
 
-# Interrupt bouton 1
-def button1_callback(channel):
-    TS_var.flagButton1 = True
-
-# Interrupt bouton 2
-def button2_callback(channel):
-    TS_var.flagButton2 = True
-
-
-# Gestion du fichier de configuration config.ini
 class config():
+    """ Classe régissant le fichier de configuration
+    Peut simplement être déclarée comme "config('config.ini')" pour initialiser les paramètres
+    Arguments : STRING nom du fichier de configuration (config.ini)"""
+
     def __init__(self, configname):
         self.name = configname
         self.config = configparser.ConfigParser()
 
-    # Initialise les paramètres du fichier de configuration
-    # Corrige à la valeur de initiale si aucun fichier ou fichier erroné trouvé
+        self.config_setup()
+
     def config_setup(self):
+        """ Fonction principale de la classe. Vérifie, corrige et met à jour le fichier de configuration\n
+        Arguments : soit-même
+        Retourne : NULL
+        """
         if not self.config_exists():
            self.config_reset()
         
@@ -97,9 +109,11 @@ class config():
         self.config_write_module()
         self.config_ini_var()
 
-
-    # Lis le fichier de configuration et initialise les variables globales
     def config_ini_var(self):
+        """ Fonction lisant le fichier de configuration et initialisant les variables globales\n
+        Arguments : soit-même
+        Retourne : NULL"""
+
         self.config.read(self.name)
 
         if 'Module' in self.config and 'DB_con' in self.config:
@@ -113,19 +127,29 @@ class config():
             self.config_reset()
             self.config_ini_var()
     
-    # Vérifie si le fichier de configuration existe
     def config_exists(self):
+        """Fonction vérifiant si le fichier de configuration existe\n
+        Arguments : soit-même
+        Retourne : BOOL : Vrai si trouvé, sinon Faux"""
+
         return True if os.path.exists(self.name) else False
 
-    # Remet à 0 du fichier de configuration
     def config_reset(self):
+        """Fonction remettant à zéro les valeurs du fichier de configuration. Se calque sur le fichier reset_config.ini\n
+        Arguments : soit-même
+        Retourne : NULL"""
+
         shutil.copy("reset_config.ini", "config.ini")
 
-    
-    # Récupère et modifie les paramètres "MODULE"
     def config_write_module(self):
+        """Fonction se connectant, récupérant et modifiant les paramètres [Module] du fichier de configuration\n
+        Arguments : soit-même
+        Retourne : NULL"""
+
         sql = DB_con(TS_var.DB_connect)
-        
+        if not sql:
+            return False
+
         with sql:
             with sql.cursor() as cursor:
                 cursor.execute("SELECT Mode, ID_piscine FROM module WHERE ID_module=%s", TS_var.module[0])
@@ -140,16 +164,17 @@ class config():
     
         with open(self.name, 'w') as configfile:
             self.config.write(configfile)
-        
-        return True
 
-# Se connecte à la base de donnée et renvoi son objet
+
 def DB_con(id_con):
+    """Fonction se connectant à la base de donnée MySQL selon les paramètres de connexion donnés\n
+    Arguments : LISTE information de connexion, au format : ['hôte', 'utilisateur', 'mots de passe', 'base de données']
+    Retourne : PYMYSQL objet de connexion si connexion OK, sinon BOOL Faux"""
+
     try:
         return pymysql.connect(host=id_con[0],
                 user=id_con[1],
                 password=id_con[2],
                 database=id_con[3])
-
     except:
         return False

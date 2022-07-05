@@ -19,7 +19,7 @@
         <!-- Bannière -->
         <div id="includedBanner"></div>
         <center>
-            
+
         <?php
             include 'path_BD.php';
 
@@ -35,23 +35,10 @@
         ?>
 
         <table border="0">
-            <TR height="20">
-                <TD width="200" align="left">
-                    <strong>Clé d'identification de l'utilisateur</strong>
-                </TD>
-                <TD width="200" align="left">
-                    <strong>Clé d'identification</strong>
+            <TR>
+                <TD>
                 </TD>
             </TR>
 
-         <?php
-            $tags = $bdd->query("SELECT * FROM tag");
-            foreach($tags as $tag) {
-                echo "<TR><TD>".$tag['EPC']."</TD><TD>".$tag['ID_tag']."</TD><TD></TR>";
-            }
-        ?>
 
         </table>
-
-    </body>
-</html>
