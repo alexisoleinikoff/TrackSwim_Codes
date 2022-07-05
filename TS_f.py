@@ -61,9 +61,9 @@ def ini_reader(read_power):
     if read_power > 2700:
         read_power = 2700
 
-    reader = mercury.Reader("tmr:///dev/ttyS0", 115200)
+    reader = mercury.Reader("tmr:///dev/ttyS0", baudrate=115200)
     reader.set_region("EU3")
-    reader.set_read_plan([1], "GEN2", read_power)
+    reader.set_read_plan([1], "GEN2", read_power=read_power)
 
     return reader
 
