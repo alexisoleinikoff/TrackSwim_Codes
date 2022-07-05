@@ -15,7 +15,7 @@ import RPi.GPIO as GPIO
 
 # Modules créés
 import TS_var
-from TS_f import millis, millis_to_hhmmss, millis_to_mmssms, add_tag, rgb
+from TS_f import millis, millis_to_hhmmss, millis_to_mmssms, ini_reader ,add_tag, rgb, config
 
 
 if __name__ == '__main__':
@@ -36,9 +36,13 @@ if __name__ == '__main__':
     DIO_GREEN = 2
     CLK_BLUE = 24
     DIO_BLUE = 23
+
     T_UPDATE_SCREEN = 20 #ms
     ANTI_BOUNCE = 100 #ms
     SECONDE = 1000 #ms
+
+    MAX_READ_POWER = 2700 #cdB
+    MIN_READ_POWER = 1000 #cdB
 
     # Variables
     t1 = millis()
@@ -75,29 +79,30 @@ if __name__ == '__main__':
 
 
     # Interuption sur le bouton 2 (bouton de gestion de l'ajout des tags dans la BD)
-    def button2_callback(channel):
+    def select_addTag_state(channel):
         """ Fonction d'appel lors d'une detection d'interuption sur le bouton 2.
         Ne renvoi rien mais modifie la variable globale correspondante\n
         Arguments : channel (interrupt)
         Retourne : NULL """
         global button2timer
 
-        if not GPIO.input(BUTTON2): # Bouton appuyé ?
-            button2timer = millis() # Si oui, temps actuel retenu
-        else:
-            if millis() - button2timer >= SECONDE: # Quand relâché, compare le temps actuel et celui pris lors de l'appui
-                TS_var.etat_ajout_tag = 2 # Si >= 1 seconde -> envoyer les données
+        if not TS_var.etat_module:
+            if not GPIO.input(BUTTON2): # Bouton appuyé ?
+                button2timer = millis() # Si oui, temps actuel retenu
             else:
-                TS_var.etat_ajout_tag = 1 # Si < 1 seconde -> scanner un tag
+                if millis() - button2timer >= SECONDE: # Quand relâché, compare le temps actuel et celui pris lors de l'appui
+                    TS_var.etat_ajout_tag = 2 # Si >= 1 seconde -> envoyer les données
+                else:
+                    TS_var.etat_ajout_tag = 1 # Si < 1 seconde -> scanner un tag
 
 
     GPIO.setup(BUTTON2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(BUTTON2, GPIO.BOTH, 
-                callback=button2_callback, bouncetime=ANTI_BOUNCE)
+                callback=select_addTag_state, bouncetime=ANTI_BOUNCE)
 
     # Interuption sur le bouton 3 (bouton de gestion du mode "configuration" ou "continu")
-    def button3_callback(channel):
-        """ Fonction d'appel lors d'une detection d'interuption sur le bouton 2.
+    def switch_module_state(channel):
+        """ Fonction d'appel lors d'une detection d'interuption sur le bouton 3.
         Ne renvoi rien mais modifie la variable globale correspondante\n
         Arguments : channel (interrupt)
         Retourne : NULL """
@@ -106,7 +111,7 @@ if __name__ == '__main__':
 
     GPIO.setup(BUTTON3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(BUTTON3, GPIO.FALLING, 
-                callback=button3_callback, bouncetime=ANTI_BOUNCE)
+                callback=switch_module_state, bouncetime=ANTI_BOUNCE)
 
     # Buzzer
     GPIO.setup(BUZZER, GPIO.OUT)
@@ -121,28 +126,25 @@ if __name__ == '__main__':
     tmb.write([0,0,0,0,0,0]) # valeurs initiales (écran vide)
     tmg.write([0,0,0,0,0,0])
 
-    # Test read
-    reader = mercury.Reader("tmr:///dev/ttyS0", baudrate=115200)
-    reader.set_region("EU3")
-    reader.set_read_plan([1], "GEN2", read_power=2700)
-    #print(reader.read())
+    # Configuration initiale config.ini
+    config('config.ini')
 
     # Main
     try:
         while True:
 
+            # Si un changement d'état dans le module -> cleanup avant de changer
+            if(TS_var.etat_module != TS_var.old_etat_module):
+                if(TS_var.etat_module): # False -> True : Config -> Continu
+                    pass
+                else: # True -> False : Continu -> Config
+                    reader = ini_reader(MIN_READ_POWER)
+
+                TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
+
+
             # "Switch case" du mode de fonctionnement
             if(TS_var.etat_module): # Fonctionnement continu
-            
-                if(TS_var.flagButton1):
-                    t_initial = millis()
-
-                    TS_var.flagButton1 = False
-                    GPIO.output(LED_BLUE, GPIO.LOW)
-                    GPIO.output(LED_YELLOW, GPIO.LOW)
-
-                add_tag()
-
                 # Mise à jour de l'écran
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
@@ -151,6 +153,8 @@ if __name__ == '__main__':
             
             
             else: # Mode configuration
+                add_tag(reader, stock_tag)
+
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
                     tmg.write(tmg.encode_string('000000'))

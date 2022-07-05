@@ -50,16 +50,43 @@ def millis_to_mmssms(t_initial, t_fin):
         x = x + ':00'
     return x
 
-def add_tag():
 
-    if not TS_var.etat_ajout_tag:
+def ini_reader(read_power):
+    """ Initialise le lecteur RFID avec la puissance de lecture passée en argument\n
+    Arguments : INT puissance de lecture
+    Retourne : MERCURY reader"""
+
+    if read_power < 0:
+        read_power = 1
+    if read_power > 2700:
+        read_power = 2700
+
+    reader = mercury.Reader("tmr:///dev/ttyS0", 115200)
+    reader.set_region("EU3")
+    reader.set_read_plan([1], "GEN2", read_power)
+
+    return reader
+
+# Ajouter un tag à la base de données
+def add_tag(reader, list):
+    if not TS_var.etat_ajout_tag: # cas 0 : ne rien faire
         pass
-    elif TS_var.etat_ajout_tag == 1:
+
+    elif TS_var.etat_ajout_tag == 1: # cas 1 : scanner une fois et enregister les tags dans une liste temporaire
+        reader = ini_reader(1000)
         GPIO.output(LED_BLUE, GPIO.HIGH)
-    else:
-        GPIO.output(LED_YELLOW, GPIO.HIGH)
+        for tag in reader.read():
+            if not tag.EPC in list:
+                list.append(tag.EPC)
+        GPIO.output(LED_BLUE, GPIO.LOW)
+        return list
+
+    else: # cas 2 : Mettre à jour la base de données
+        print(list)
         
     TS_var.etat_ajout_tag = 0
+
+
 
 class session():
     """ Classe régissant les paramètres d'une session de natation
