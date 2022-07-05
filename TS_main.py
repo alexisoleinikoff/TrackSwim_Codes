@@ -154,7 +154,7 @@ if __name__ == '__main__':
             
             
             else: # Mode configuration
-                stock_tag = add_tag(reader, stock_tag)
+                add_tag(reader, stock_tag)
 
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()

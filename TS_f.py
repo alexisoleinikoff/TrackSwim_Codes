@@ -82,9 +82,6 @@ def add_tag(reader, list):
                 list.append(tag.epc)
 
         GPIO.output(LED_BLUE, GPIO.LOW)
-        TS_var.etat_ajout_tag = 0
-
-        return list
 
     else: # cas 2 : Mettre à jour la base de données
         print(list)
