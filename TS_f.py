@@ -52,14 +52,14 @@ def millis_to_mmssms(t_initial, t_fin):
 
 def add_tag():
 
-    if not TS_var.button2_state:
+    if not TS_var.etat_ajout_tag:
         pass
-    elif TS_var.button2_state == 1:
+    elif TS_var.etat_ajout_tag == 1:
         GPIO.output(LED_BLUE, GPIO.HIGH)
     else:
         GPIO.output(LED_YELLOW, GPIO.HIGH)
         
-    TS_var.button2_state = 0
+    TS_var.etat_ajout_tag = 0
 
 class session():
     """ Classe régissant les paramètres d'une session de natation

@@ -61,7 +61,7 @@ if __name__ == '__main__':
     GPIO.output(led_wifi.g, GPIO.LOW)
     GPIO.output(led_wifi.b, GPIO.LOW)
 
-    # Interuption sur le bouton 1
+    # Interuption sur le bouton 1 (bouton de gestion wifi/RàZ)
     def button1_callback(channel):
         """ Fonction d'appel lors d'une detection d'interuption sur le bouton 1.
         Ne renvoi rien mais modifie la variable globale correspondante\n
@@ -74,7 +74,7 @@ if __name__ == '__main__':
                 callback=button1_callback, bouncetime=ANTI_BOUNCE)
 
 
-    # Interuption sur le bouton 2
+    # Interuption sur le bouton 2 (bouton de gestion de l'ajout des tags dans la BD)
     def button2_callback(channel):
         """ Fonction d'appel lors d'une detection d'interuption sur le bouton 2.
         Ne renvoi rien mais modifie la variable globale correspondante\n
@@ -86,15 +86,16 @@ if __name__ == '__main__':
             button2timer = millis() # Si oui, temps actuel retenu
         else:
             if millis() - button2timer >= SECONDE: # Quand relâché, compare le temps actuel et celui pris lors de l'appui
-                TS_var.button2_state = 2 # Si >= 1 seconde -> envoyer les données
+                TS_var.etat_ajout_tag = 2 # Si >= 1 seconde -> envoyer les données
             else:
-                TS_var.button2_state = 1 # Si < 1 seconde -> scanner un tag
+                TS_var.etat_ajout_tag = 1 # Si < 1 seconde -> scanner un tag
 
 
     GPIO.setup(BUTTON2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(BUTTON2, GPIO.BOTH, 
                 callback=button2_callback, bouncetime=ANTI_BOUNCE)
 
+    # Interuption sur le bouton 3 (bouton de gestion du mode "configuration" ou "continu")
     def button3_callback(channel):
         """ Fonction d'appel lors d'une detection d'interuption sur le bouton 2.
         Ne renvoi rien mais modifie la variable globale correspondante\n
