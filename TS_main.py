@@ -38,7 +38,7 @@ if __name__ == '__main__':
     DIO_BLUE = 23
 
     T_UPDATE_SCREEN = 20 #ms
-    ANTI_BOUNCE = 100 #ms
+    ANTI_BOUNCE = 200 #ms
     SECONDE = 1000 #ms
 
     MAX_READ_POWER = 2700 #cdB
@@ -158,7 +158,7 @@ if __name__ == '__main__':
 
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
-                    
+
                     tmg.write(tmg.encode_string('000000'))
                     tmb.write(tmb.encode_string(millis_to_hhmmss(t_initial, millis())))
 
