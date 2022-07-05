@@ -154,12 +154,13 @@ if __name__ == '__main__':
             
             
             else: # Mode configuration
-                add_tag(reader, stock_tag)
+                stock_tag = add_tag(reader, stock_tag)
 
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
+                    
                     tmg.write(tmg.encode_string('000000'))
-                    tmb.write(tmb.encode_string('000000'))
+                    tmb.write(tmb.encode_string(millis_to_hhmmss(t_initial, millis())))
 
 
     except KeyboardInterrupt:

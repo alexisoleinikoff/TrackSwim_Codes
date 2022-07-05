@@ -51,19 +51,19 @@ def millis_to_mmssms(t_initial, t_fin):
     return x
 
 
-def ini_reader(read_power):
+def ini_reader(read_pow):
     """ Initialise le lecteur RFID avec la puissance de lecture passée en argument\n
     Arguments : INT puissance de lecture
     Retourne : MERCURY reader"""
 
-    if read_power < 0:
-        read_power = 1
-    if read_power > 2700:
-        read_power = 2700
+    if read_pow < 0:
+        read_pow = 1
+    if read_pow > 2700:
+        read_pow = 2700
 
     reader = mercury.Reader("tmr:///dev/ttyS0", baudrate=115200)
     reader.set_region("EU3")
-    reader.set_read_plan([1], "GEN2", read_power=read_power)
+    reader.set_read_plan([1], "GEN2", read_power=read_pow)
 
     return reader
 
@@ -73,19 +73,21 @@ def add_tag(reader, list):
         pass
 
     elif TS_var.etat_ajout_tag == 1: # cas 1 : scanner une fois et enregister les tags dans une liste temporaire
-        reader = ini_reader(1000)
         GPIO.output(LED_BLUE, GPIO.HIGH)
         r = reader.read()
         for tag in r:
             if not tag.EPC in list:
                 list.append(tag.EPC)
+
         GPIO.output(LED_BLUE, GPIO.LOW)
+        TS_var.etat_ajout_tag = 0
+        
         return list
 
     else: # cas 2 : Mettre à jour la base de données
         print(list)
         
-    TS_var.etat_ajout_tag = 0
+    
 
 
 
