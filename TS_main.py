@@ -140,6 +140,7 @@ if __name__ == '__main__':
                 else: # True -> False : Continu -> Config
                     print('True -> False, cleaned up')
                     reader = ini_reader(MIN_READ_POWER)
+                    tmg.write(tmg.encode_string('CONFIG'))
 
                 TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
 
@@ -158,9 +159,7 @@ if __name__ == '__main__':
 
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
-
-                    tmg.write(tmg.encode_string('000000'))
-                    tmb.write(tmb.encode_string(millis_to_hhmmss(t_initial, millis())))
+                    tmb.write(tmb.encode_string(str(len(stock_tag))+'TAG'))
 
 
     except KeyboardInterrupt:
