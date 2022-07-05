@@ -29,6 +29,7 @@ if __name__ == '__main__':
     LED_BLUE = 27
     BUTTON1 = 17
     BUTTON2 = 22
+    BUTTON3 = 25
     BUZZER = 18
     led_wifi = rgb(10, 9, 11)
     CLK_GREEN = 3
@@ -94,6 +95,12 @@ if __name__ == '__main__':
     GPIO.add_event_detect(BUTTON2, GPIO.BOTH, 
                 callback=button2_callback, bouncetime=ANTI_BOUNCE)
 
+    def button3_callback(channel):
+        TS_var.flagButton3 = True
+
+    GPIO.setup(BUTTON3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(BUTTON3, GPIO.FALLING, 
+                callback=button3_callback, bouncetime=ANTI_BOUNCE)
 
     # Buzzer
     GPIO.setup(BUZZER, GPIO.OUT)
@@ -118,8 +125,10 @@ if __name__ == '__main__':
     try:
         while True:
 
-            if(TS_var.flagButton1):
+            if(TS_var.flagButton1 or TS_var.flagButton3):
                 t_initial = millis()
+
+                TS_var.flagButton3 = False
                 TS_var.flagButton1 = False
                 GPIO.output(LED_BLUE, GPIO.LOW)
                 GPIO.output(LED_YELLOW, GPIO.LOW)
