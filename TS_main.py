@@ -96,7 +96,12 @@ if __name__ == '__main__':
                 callback=button2_callback, bouncetime=ANTI_BOUNCE)
 
     def button3_callback(channel):
-        TS_var.flagButton3 = True
+        """ Fonction d'appel lors d'une detection d'interuption sur le bouton 2.
+        Ne renvoi rien mais modifie la variable globale correspondante\n
+        Arguments : channel (interrupt)
+        Retourne : NULL """
+
+        TS_var.etat_module = not TS_var.etat_module
 
     GPIO.setup(BUTTON3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(BUTTON3, GPIO.FALLING, 
@@ -108,8 +113,8 @@ if __name__ == '__main__':
     #buzz.start(10)
 
     # Initialisation des écrans
-    tmg = tm1637.TM1637(clk=CLK_GREEN, dio=DIO_GREEN) #GPIO NUM, écran vert, en haut
-    tmb = tm1637.TM1637(clk=CLK_BLUE, dio=DIO_BLUE) #GPIO NUM, écran bleu, en bas
+    tmg = tm1637.TM1637(CLK_GREEN, DIO_GREEN) #GPIO NUM, écran vert, en haut
+    tmb = tm1637.TM1637(CLK_BLUE, DIO_BLUE) #GPIO NUM, écran bleu, en bas
     tmb.brightness(1) # luminosité (de 1 à 7)
     tmg.brightness(7)
     tmb.write([0,0,0,0,0,0]) # valeurs initiales (écran vide)
@@ -125,21 +130,31 @@ if __name__ == '__main__':
     try:
         while True:
 
-            if(TS_var.flagButton1 or TS_var.flagButton3):
-                t_initial = millis()
+            # "Switch case" du mode de fonctionnement
+            if(TS_var.etat_module): # Fonctionnement continu
+            
+                if(TS_var.flagButton1):
+                    t_initial = millis()
 
-                TS_var.flagButton3 = False
-                TS_var.flagButton1 = False
-                GPIO.output(LED_BLUE, GPIO.LOW)
-                GPIO.output(LED_YELLOW, GPIO.LOW)
+                    TS_var.flagButton1 = False
+                    GPIO.output(LED_BLUE, GPIO.LOW)
+                    GPIO.output(LED_YELLOW, GPIO.LOW)
 
-            add_tag()
+                add_tag()
 
-            # Mise à jour de l'écran
-            if millis() - t1 > T_UPDATE_SCREEN:
-                t1 = millis()
-                tmg.write(tmg.encode_string(millis_to_mmssms(t_initial, millis())))
-                tmb.write(tmb.encode_string(millis_to_hhmmss(t_initial, millis())))
+                # Mise à jour de l'écran
+                if millis() - t1 > T_UPDATE_SCREEN:
+                    t1 = millis()
+                    tmg.write(tmg.encode_string(millis_to_mmssms(t_initial, millis())))
+                    tmb.write(tmb.encode_string(millis_to_hhmmss(t_initial, millis())))
+            
+            
+            else: # Mode configuration
+                if millis() - t1 > T_UPDATE_SCREEN:
+                    t1 = millis()
+                    tmg.write(tmg.encode_string('000000'))
+                    tmb.write(tmb.encode_string('000000'))
+
 
     except KeyboardInterrupt:
         GPIO.cleanup()
