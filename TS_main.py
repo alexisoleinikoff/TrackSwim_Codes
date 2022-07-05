@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
     # Test read
     reader = mercury.Reader("tmr:///dev/ttyS0", baudrate=115200)
-    reader.set_region("EU2")
+    reader.set_region("EU3")
     reader.set_read_plan([1], "GEN2", read_power=2700)
     #print(reader.read())
 
@@ -121,6 +121,8 @@ if __name__ == '__main__':
             if(TS_var.flagButton1):
                 t_initial = millis()
                 TS_var.flagButton1 = False
+                GPIO.output(LED_BLUE, GPIO.LOW)
+                GPIO.output(LED_YELLOW, GPIO.LOW)
 
             add_tag()
 

@@ -58,6 +58,8 @@ def add_tag():
         GPIO.output(LED_BLUE, GPIO.HIGH)
     else:
         GPIO.output(LED_YELLOW, GPIO.HIGH)
+        
+    TS_var.button2_state = 0
 
 class session():
     """ Classe régissant les paramètres d'une session de natation
