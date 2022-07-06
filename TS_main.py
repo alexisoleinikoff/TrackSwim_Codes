@@ -107,10 +107,12 @@ if __name__ == '__main__':
             if TS_var.etat_module != TS_var.old_etat_module:
                 if TS_var.etat_module: # False -> True : Config -> Continu
                     print('Config -> Continu')
+                    start_new_thread = True
+
                 else: # True -> False : Continu -> Config
                     print('Continu -> Config')
 
-
+                    t.join()
                     reader = ini_reader(MIN_READ_POWER)
                     tmg.write(tmg.encode_string('CONFIG'))
 
