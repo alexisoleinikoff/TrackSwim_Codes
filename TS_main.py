@@ -15,7 +15,7 @@ import RPi.GPIO as GPIO
 
 # Modules créés
 import TS_var
-from TS_f import millis, millis_to_hhmmss, millis_to_mmssms, ini_reader ,add_tag, rgb, config
+from TS_function import *
 
 
 if __name__ == '__main__':
@@ -66,49 +66,16 @@ if __name__ == '__main__':
     GPIO.output(led_wifi.b, GPIO.LOW)
 
     # Interuption sur le bouton 1 (bouton de gestion wifi/RàZ)
-    def button1_callback(channel):
-        """ Fonction d'appel lors d'une detection d'interuption sur le bouton 1.
-        Ne renvoi rien mais modifie la variable globale correspondante\n
-        Arguments : channel (interrupt)
-        Retourne : NULL """
-        TS_var.flagButton1 = True
-
     GPIO.setup(BUTTON1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(BUTTON1, GPIO.FALLING, 
                 callback=button1_callback, bouncetime=ANTI_BOUNCE)
 
-
     # Interuption sur le bouton 2 (bouton de gestion de l'ajout des tags dans la BD)
-    def select_addTag_state(channel):
-        """ Fonction d'appel lors d'une detection d'interuption sur le bouton 2.
-        Ne renvoi rien mais modifie la variable globale correspondante\n
-        Arguments : channel (interrupt)
-        Retourne : NULL """
-        global button2timer
-
-        if not TS_var.etat_module:
-            if not GPIO.input(BUTTON2): # Bouton appuyé ?
-                button2timer = millis() # Si oui, temps actuel retenu
-            else:
-                if millis() - button2timer >= SECONDE: # Quand relâché, compare le temps actuel et celui pris lors de l'appui
-                    TS_var.etat_ajout_tag = 2 # Si >= 1 seconde -> envoyer les données
-                else:
-                    TS_var.etat_ajout_tag = 1 # Si < 1 seconde -> scanner un tag
-
-
     GPIO.setup(BUTTON2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(BUTTON2, GPIO.BOTH, 
                 callback=select_addTag_state, bouncetime=ANTI_BOUNCE)
 
     # Interuption sur le bouton 3 (bouton de gestion du mode "configuration" ou "continu")
-    def switch_module_state(channel):
-        """ Fonction d'appel lors d'une detection d'interuption sur le bouton 3.
-        Ne renvoi rien mais modifie la variable globale correspondante\n
-        Arguments : channel (interrupt)
-        Retourne : NULL """
-
-        TS_var.etat_module = not TS_var.etat_module
-
     GPIO.setup(BUTTON3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(BUTTON3, GPIO.FALLING, 
                 callback=switch_module_state, bouncetime=ANTI_BOUNCE)
@@ -136,17 +103,25 @@ if __name__ == '__main__':
             # Si un changement d'état dans le module -> cleanup avant de changer
             if(TS_var.etat_module != TS_var.old_etat_module):
                 if(TS_var.etat_module): # False -> True : Config -> Continu
-                    print('False -> True, cleaned up')
+                    print('Config -> Continu')
                 else: # True -> False : Continu -> Config
-                    print('True -> False, cleaned up')
+                    print('Continu -> Config')
+
+
                     reader = ini_reader(MIN_READ_POWER)
                     tmg.write(tmg.encode_string('CONFIG'))
 
                 TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
 
 
+
             # "Switch case" du mode de fonctionnement
             if(TS_var.etat_module): # Fonctionnement continu
+
+                # Thread
+
+                # Récupérer Q et traite info
+
                 # Mise à jour de l'écran
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()

@@ -5,4 +5,5 @@ https://github.com/alexsoleinikoff/TrakSwim_Codes.git
 
 db :
 user: tspi
+host: 10.192.91.121
 pass: tspi_pass_123

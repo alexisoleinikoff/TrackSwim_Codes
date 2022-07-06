@@ -13,6 +13,9 @@ import TS_var
 ### Constantes (dupliquées de TS_main.py)
 LED_YELLOW = 4
 LED_BLUE = 27
+BUTTON1 = 17
+BUTTON2 = 22
+BUTTON3 = 25
 
 ### FONCTIONS DE TRAITEMENT DES MESURES ###
 def millis():
@@ -49,7 +52,6 @@ def millis_to_mmssms(t_initial, t_fin):
     if len(x) < 8:
         x = x + ':00'
     return x
-
 
 def ini_reader(read_pow):
     """ Initialise le lecteur RFID avec la puissance de lecture passée en argument\n
@@ -89,8 +91,6 @@ def add_tag(reader, list):
     TS_var.etat_ajout_tag = 0
     
 
-
-
 class session():
     """ Classe régissant les paramètres d'une session de natation
     Le paramètre "session_end" est auto-initialisé à None\n
@@ -109,6 +109,37 @@ class session():
         return True if self.EPC == EPC and self.session_end == None else False
 
 ### FONCTIONS DE CONTRÔLE DU MODULE ###
+
+def button1_callback(channel):
+    """ Fonction d'appel lors d'une detection d'interuption sur le bouton 1.
+    Ne renvoi rien mais modifie la variable globale correspondante\n
+    Arguments : channel (interrupt)
+    Retourne : NULL """
+    TS_var.flagButton1 = True
+
+def select_addTag_state(channel):
+    """ Fonction d'appel lors d'une detection d'interuption sur le bouton 2.
+    Ne renvoi rien mais modifie la variable globale correspondante\n
+    Arguments : channel (interrupt)
+    Retourne : NULL """
+
+    if not TS_var.etat_module:
+        if not GPIO.input(BUTTON2): # Bouton appuyé ?
+            TS_var.button2timer = millis() # Si oui, temps actuel retenu
+        else:
+            if millis() - TS_var.button2timer >= SECONDE: # Quand relâché, compare le temps actuel et celui pris lors de l'appui
+                TS_var.etat_ajout_tag = 2 # Si >= 1 seconde -> envoyer les données
+            else:
+                TS_var.etat_ajout_tag = 1 # Si < 1 seconde -> scanner un tag
+
+def switch_module_state(channel):
+    """ Fonction d'appel lors d'une detection d'interuption sur le bouton 3.
+    Ne renvoi rien mais modifie la variable globale correspondante\n
+    Arguments : channel (interrupt)
+    Retourne : NULL """
+
+    TS_var.etat_module = not TS_var.etat_module
+
 class rgb():
     """ Classe régissant les paramètres des LEDs RGB
     Arguments : INT GPIO num rouge, INT GPIO num green, INT GPIO num bleu"""
@@ -178,7 +209,7 @@ class config():
         Arguments : soit-même
         Retourne : NULL"""
 
-        sql = DB_con(TS_var.DB_connect)
+        sql = DB_connect(TS_var.DB_connect)
         if not sql:
             return False
 
@@ -198,7 +229,7 @@ class config():
             self.config.write(configfile)
 
 
-def DB_con(id_con):
+def DB_connect(id_con):
     """Fonction se connectant à la base de donnée MySQL selon les paramètres de connexion donnés\n
     Arguments : LISTE information de connexion, au format : ['hôte', 'utilisateur', 'mots de passe', 'base de données']
     Retourne : PYMYSQL objet de connexion si connexion OK, sinon BOOL Faux"""
