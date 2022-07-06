@@ -11,7 +11,7 @@ update_thread = True
 def readTag():
     test()
     time.sleep(2)
-    q.put(10)
+    q.put()
 
 def test():
     print('lancé')

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import print_function
+from pickle import TRUE
 import sys
 sys.path.append('/home/tspi/.local/lib/python3.9/site-packages') # Lien vers tm1637
 sys.path.append('/home/tspi/.local/lib/python3.9/site-packages/python-mercuryapi') # Lien vers python-mercuryapi
@@ -10,13 +11,13 @@ import tm1637 #https://github.com/depklyon/raspberrypi-tm1637
 
 # Modules standards
 from datetime import timedelta
+from threading import Thread, active_count
 import time
 import RPi.GPIO as GPIO
 
 # Modules créés
 import TS_var
 from TS_function import *
-
 
 if __name__ == '__main__':
 
@@ -48,6 +49,8 @@ if __name__ == '__main__':
     t1 = millis()
     t_initial = t1
     stock_tag = []
+    session_list = []
+    start_new_thread = True
 
     ### Initialisation des GPIO
     GPIO.setmode(GPIO.BCM)
@@ -101,8 +104,8 @@ if __name__ == '__main__':
         while True:
 
             # Si un changement d'état dans le module -> cleanup avant de changer
-            if(TS_var.etat_module != TS_var.old_etat_module):
-                if(TS_var.etat_module): # False -> True : Config -> Continu
+            if TS_var.etat_module != TS_var.old_etat_module:
+                if TS_var.etat_module: # False -> True : Config -> Continu
                     print('Config -> Continu')
                 else: # True -> False : Continu -> Config
                     print('Continu -> Config')
@@ -118,9 +121,20 @@ if __name__ == '__main__':
             # "Switch case" du mode de fonctionnement
             if(TS_var.etat_module): # Fonctionnement continu
 
-                # Thread
+                # Crée un nouveau thread si les valeurs de la queue ont été récupérés
+                # et que le nombre de thread actif == 1 (== seul le main est actif)
+                if start_new_thread and active_count() == 1:
+                    t = Thread(target=read_continuous)
+                    t.start()
+                    start_new_thread = False
 
-                # Récupérer Q et traite info
+                # Vérifie si la queue est vide et récupére et traite les données si c'est le cas
+                # Passe à vrai la valeur permettant de relancer un thread
+                # /!\ D'abord vérifier si c'est vide, ensuite récupérer la données
+                # q.get() met en pause le programme tant qu'il n'a rien dans la queue
+                if TS_var.q.qsize() != 0:
+                   print('Scan fini : Vide') if TS_var.q.get() else print('Scan fini : Valeurs obtenues')
+                   start_new_thread = True
 
                 # Mise à jour de l'écran
                 if millis() - t1 > T_UPDATE_SCREEN:

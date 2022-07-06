@@ -16,6 +16,7 @@ LED_BLUE = 27
 BUTTON1 = 17
 BUTTON2 = 22
 BUTTON3 = 25
+SECONDE = 1000 #ms
 
 ### FONCTIONS DE TRAITEMENT DES MESURES ###
 def millis():
@@ -52,6 +53,20 @@ def millis_to_mmssms(t_initial, t_fin):
     if len(x) < 8:
         x = x + ':00'
     return x
+
+def read_continuous():
+    """ Fonction à passer dans un nouveau thread.
+    Initialise le lecteur, réalise une mesure, et envoi le résultat dans la queue\n
+    Arguments : NULL
+    Retourne : NULL (queue pour retourner les données)"""
+
+    reader = ini_reader(2700)
+    time.sleep(0.5) # REMPLACER "SLEEP" PAR UN ON/OFF (ENABLE)
+    GPIO.output(LED_BLUE, GPIO.HIGH)
+    r = reader.read()
+    TS_var.q.put(False) if not r else TS_var.q.put(r)
+    GPIO.output(LED_BLUE, GPIO.LOW)
+
 
 def ini_reader(read_pow):
     """ Initialise le lecteur RFID avec la puissance de lecture passée en argument\n
