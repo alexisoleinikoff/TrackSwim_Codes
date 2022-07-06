@@ -62,10 +62,8 @@ def read_continuous():
 
     reader = ini_reader(2700)
     time.sleep(0.5) # REMPLACER "SLEEP" PAR UN ON/OFF (ENABLE)
-    GPIO.output(LED_BLUE, GPIO.HIGH)
     r = reader.read()
     TS_var.q.put(False) if not r else TS_var.q.put(r)
-    GPIO.output(LED_BLUE, GPIO.LOW)
 
 
 def ini_reader(read_pow):
