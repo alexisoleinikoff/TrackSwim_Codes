@@ -133,7 +133,7 @@ if __name__ == '__main__':
                 # /!\ D'abord vérifier si c'est vide, ensuite récupérer la données
                 # q.get() met en pause le programme tant qu'il n'a rien dans la queue
                 if TS_var.q.qsize() != 0:
-                   print('Scan fini : Vide') if TS_var.q.get() else print('Scan fini : Valeurs obtenues')
+                   print('Scan fini : Vide') if not TS_var.q.get() else print('Scan fini : Valeurs obtenues')
                    start_new_thread = True
 
                 # Mise à jour de l'écran
