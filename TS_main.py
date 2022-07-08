@@ -38,12 +38,14 @@ if __name__ == '__main__':
     CLK_BLUE = 24
     DIO_BLUE = 23
 
-    T_UPDATE_SCREEN = 20 #ms
+    T_UPDATE_SCREEN = 30 #ms
     ANTI_BOUNCE = 200 #ms
     SECONDE = 1000 #ms
 
     MAX_READ_POWER = 2700 #cdB
     MIN_READ_POWER = 1000 #cdB
+
+    V_MAX = 2.39 # vitesse moyenne du record du monde de natation 50m en 20.91s (google)
 
     # Variables
     t1 = millis()
@@ -98,6 +100,10 @@ if __name__ == '__main__':
 
     # Configuration initiale config.ini
     config('config.ini')
+
+    # Calcul du temps minimal pour un aller retour de module[l_piscine] mètres
+    # Si un utilisateur réalise un temps plus petit que celui-ci, il n'est pas compté
+    T_MIN = TS_var.module/V_MAX
 
     # Main
     try:
