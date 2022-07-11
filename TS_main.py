@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     # Calcul du temps minimal pour un aller retour de module[l_piscine] mètres
     # Si un utilisateur réalise un temps plus petit que celui-ci, il n'est pas compté
-    T_MIN = TS_var.module/V_MAX
+    T_MIN = int(TS_var.module[3]/V_MAX)
 
     # Main
     try:
