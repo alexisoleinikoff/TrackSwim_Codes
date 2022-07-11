@@ -145,8 +145,8 @@ if __name__ == '__main__':
                 if TS_var.q.qsize() != 0:
                     r = TS_var.q.get()
                     if r:
-                        print('Data récoltée')
                         main_data.data_treatment(r, T_MIN)
+                        print(main_data.sessions_list[0].depart[len(main_data.sessions_list[0].depart)-1])
                         
                     start_new_thread = True
 
