@@ -362,7 +362,7 @@ class six_digits():
                     a = session.arrivee[len(session.arrivee) - 2]
                     print('Arrivée : ', a)
                     print('dT : ', a-d)
-                    self.display_tmg(self.millis_to_mmssms(int(d),int(a)))
+                    self.display_tmg(self.millis_to_mmssms(1000*d,1000*a))
                 else:
                     self.display_tmg('d----a')
 
