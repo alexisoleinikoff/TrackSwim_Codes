@@ -357,10 +357,8 @@ class six_digits():
         for session in data.sessions_list: 
             if session.is_EPC_and_active(EPC_to_display): # Vérifier l'EPC correspondant pour une session ouverte
                 if session.arrivee: # cas 'initiale' premier tag pas encore d'arrivée
-                    d = session.depart[len(session.depart) - 2]
-                    a = session.arrivee[len(session.arrivee) - 2]
-                    str = self.millis_to_mmssms(d, a)
-                    self.display_tmb(str)
+                    self.display_tmb(self.millis_to_mmssms(session.depart[len(session.depart) - 2],
+                                                        session.arrivee[len(session.arrivee) - 2]))
                 else:
                     self.display_tmg('d----a')
 
@@ -374,7 +372,7 @@ class six_digits():
         self.tmb.write([0,0,0,0,0,0])
         self.tmg.write([0,0,0,0,0,0])
 
-    def millis_to_hhmmss(t_initial, t_fin):
+    def millis_to_hhmmss(self, t_initial, t_fin):
         """Fonction transformant la différence entre deux temps donnés en millisecondes
         en un string au format "hh:mm:ss"\n
         Arguments : INT Temps 1, INT Temps 2
@@ -386,7 +384,7 @@ class six_digits():
             x = '0' + x
         return x
 
-    def millis_to_mmssms(t_initial, t_fin):
+    def millis_to_mmssms(self, t_initial, t_fin):
         """Fonction transformant la différence entre deux temps donnés en millisecondes
         en un string au format "mm:ss:msms"\n
         Arguments : INT Temps 1, INT Temps 2
