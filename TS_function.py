@@ -357,7 +357,8 @@ class six_digits():
         for session in data.sessions_list: 
             if session.is_EPC_and_active(EPC_to_display): # Vérifier l'EPC correspondant pour une session ouverte
                 if session.arrivee: # cas 'initiale' premier tag pas encore d'arrivée
-                    self.display_tmb(self.millis_to_mmssms(len(session.depart) - 2, len(session.arrivee) - 2))
+                    self.display_tmb(self.millis_to_mmssms(session.depart(len(session.depart) - 2),
+                                                            session.arrive(len(session.arrivee) - 2)))
                 else:
                     self.display_tmg('0----0')
 
