@@ -107,7 +107,6 @@ if __name__ == '__main__':
     # Calcul du temps minimal pour un aller retour de module[l_piscine] mètres
     # Si un utilisateur réalise un temps plus petit que celui-ci, il n'est pas compté
     t_min = int(2*float(TS_var.module[2])/V_MAX)
-    print('Temps de threshold: ', t_min)
 
     # Main
     try:
