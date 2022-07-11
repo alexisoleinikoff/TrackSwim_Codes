@@ -153,15 +153,11 @@ if __name__ == '__main__':
 
                 # Vérification et clôture des sessions
                 if millis() - main_data.time_to_close >= 2*MINUTE:
-                    print('Vérification des sessions ...')
+                    main_data.time_to_close = millis()
+
                     main_data.close_sessions()
                     main_data.upload_closed_sessions()
-
-                # Mise à jour de l'écran
-                #if millis() - t1 > T_UPDATE_SCREEN:
-                 #   t1 = millis()
-                  #  tmg.write(tmg.encode_string(millis_to_mmssms(t_initial, millis())))
-                   # tmb.write(tmb.encode_string(millis_to_hhmmss(t_initial, millis())))
+                    
             
             else: # Mode configuration
                 tag_data.manage_tags(reader)
