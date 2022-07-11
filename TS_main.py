@@ -135,6 +135,7 @@ if __name__ == '__main__':
                 if start_new_thread and active_count() == 1:
                     t = Thread(target=read_continuous)
                     t.start()
+                    print('Nouveau thread')
                     start_new_thread = False
 
                 # Vérifie si la queue est vide et récupére et traite les données si c'est le cas
@@ -161,11 +162,11 @@ if __name__ == '__main__':
             
             
             else: # Mode configuration
-                tag_data.manage_tags(reader, stock_tag)
+                tag_data.manage_tags(reader)
 
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
-                    tmb.write(tmb.encode_string(str(len(stock_tag))+' EPC'))
+                    tmb.write(tmb.encode_string(str(len(tag_data.stock_tag))+' EPC'))
 
     except KeyboardInterrupt:
         GPIO.cleanup()
