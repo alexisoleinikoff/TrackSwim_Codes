@@ -363,7 +363,7 @@ class six_digits():
                     a = len(session.arrivee)
                     self.display_tmg(self.millis_to_mmssms(1000*session.depart[len(session.arrivee) - 1],
                                                             1000*session.arrivee[len(session.arrivee) - 1]))
-                    self.display_tmb(str(a*2*int(TS_var.module[2])))
+                    self.display_tmb(str(a*2*int(float(TS_var.module[2]))))
                 else:
                     self.display_tmg('d----a')
 
