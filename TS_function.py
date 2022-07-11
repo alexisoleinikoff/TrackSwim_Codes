@@ -210,12 +210,12 @@ class data():
         À appeler périodiquement dans le programme, juste avant la sauvegarde des données\n
         Arguments : soit-même
         Retourne : NULL"""
-        t = millis()
+        t = time.time()
 
         for session in self.sessions_list:
             # Si la dernière valeur de départ a été pris il y a plus de 2 minutes et que la session est encore ouverte -> fermer session
             if session.session_end == None:
-                if (t - session.depart[len(session.depart) - 1] >= 3*MINUTE):
+                if t - session.depart[len(session.depart) - 1] >= 3*MINUTE/1000:
                     session.session_end = session.depart.pop() # retirer la dernière valeur de départ et la mettre en tant que fin de session
             
             if session.session_end != None:
@@ -369,6 +369,7 @@ class six_digits():
                     self.display_tmb(str(a*2*int(float(TS_var.module[2]))))
                 else:
                     self.display_tmg('d----a')
+                    self.display_tmb('0')
 
     def display_tmg(self, string):
         self.tmg.write(self.tmg.encode_string(string))
