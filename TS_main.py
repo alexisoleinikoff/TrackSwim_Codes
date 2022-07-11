@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     # Calcul du temps minimal pour un aller retour de module[l_piscine] mètres
     # Si un utilisateur réalise un temps plus petit que celui-ci, il n'est pas compté
-    T_MIN = int(TS_var.module[3]/V_MAX)
+    T_MIN = int(float(TS_var.module[2])/V_MAX)
 
     # Main
     try:
@@ -143,7 +143,7 @@ if __name__ == '__main__':
                 # q.get() met en pause le programme tant qu'il n'a rien dans la queue
                 if TS_var.q.qsize() != 0:
                     r = TS_var.q.get()
-                    if not r:
+                    if r:
                         main_data.data_treatment(r, T_MIN)
                         
                     start_new_thread = True

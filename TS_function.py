@@ -7,8 +7,8 @@ import os
 import pymysql
 import shutil
 import configparser
-#import RPi.GPIO as GPIO
-#import mercury
+import RPi.GPIO as GPIO
+import mercury
 import TS_var
 
 ### Constantes (dupliquées de TS_main.py)
