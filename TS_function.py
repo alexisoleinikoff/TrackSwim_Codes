@@ -258,6 +258,9 @@ class data():
                     for i in range(len(session.depart)):
                         command = "INSERT INTO perf (Depart, Arrivee, ID_session) VALUES (%s, %s, %s)"
                         cursor.execute(command, (session.depart[i], session.arrivee[i], ID_session))
+        
+        self.sessions_to_upload.clear()
+        print('envoi terminé')
         return True
 
     class session():
@@ -357,8 +360,10 @@ class six_digits():
         for session in data.sessions_list: 
             if session.is_EPC_and_active(EPC_to_display): # Vérifier l'EPC correspondant pour une session ouverte
                 if session.arrivee: # cas 'initiale' premier tag pas encore d'arrivée
-                    self.display_tmg(self.millis_to_mmssms(1000*session.depart[len(session.depart) - 2],
-                                                            1000*session.arrivee[len(session.depart) - 2]))
+                    a = len(session.arrivee)
+                    self.display_tmg(self.millis_to_mmssms(1000*session.depart[len(session.arrivee) - 1],
+                                                            1000*session.arrivee[len(session.arrivee) - 1]))
+                    self.display_tmb(str(a*2*int(TS_var.module[2])))
                 else:
                     self.display_tmg('d----a')
 
