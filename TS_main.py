@@ -41,6 +41,7 @@ if __name__ == '__main__':
     T_UPDATE_SCREEN = 30 #ms
     ANTI_BOUNCE = 200 #ms
     SECONDE = 1000 #ms
+    MINUTE = 60000 #ms
 
     MAX_READ_POWER = 2700 #cdB
     MIN_READ_POWER = 1000 #cdB
@@ -51,7 +52,6 @@ if __name__ == '__main__':
     t1 = millis()
     t_initial = t1
     stock_tag = []
-    session_list = []
     start_new_thread = True
 
     ### Initialisation des GPIO
@@ -100,6 +100,8 @@ if __name__ == '__main__':
 
     # Configuration initiale config.ini
     config('config.ini')
+    main_data = data()
+    tag_data = Tag_to_DB()
 
     # Calcul du temps minimal pour un aller retour de module[l_piscine] mètres
     # Si un utilisateur réalise un temps plus petit que celui-ci, il n'est pas compté
@@ -125,7 +127,6 @@ if __name__ == '__main__':
                 TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
 
 
-
             # "Switch case" du mode de fonctionnement
             if(TS_var.etat_module): # Fonctionnement continu
 
@@ -141,8 +142,16 @@ if __name__ == '__main__':
                 # /!\ D'abord vérifier si c'est vide, ensuite récupérer la données
                 # q.get() met en pause le programme tant qu'il n'a rien dans la queue
                 if TS_var.q.qsize() != 0:
-                   print('Scan fini : Vide') if not TS_var.q.get() else print('Scan fini : Valeurs obtenues')
-                   start_new_thread = True
+                    r = TS_var.q.get()
+                    if not r:
+                        main_data.data_treatment(r, T_MIN)
+                        
+                    start_new_thread = True
+
+                # Vérification et clôture des sessions
+                if millis() - main_data.time_to_close >= 2*MINUTE:
+                    main_data.close_sessions()
+                    main_data.upload_closed_sessions()
 
                 # Mise à jour de l'écran
                 if millis() - t1 > T_UPDATE_SCREEN:
@@ -152,12 +161,11 @@ if __name__ == '__main__':
             
             
             else: # Mode configuration
-                add_tag(reader, stock_tag)
+                tag_data.manage_tags(reader, stock_tag)
 
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
                     tmb.write(tmb.encode_string(str(len(stock_tag))+' EPC'))
-
 
     except KeyboardInterrupt:
         GPIO.cleanup()

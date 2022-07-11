@@ -61,7 +61,7 @@
                     <TD width="250" align="center" >
                         <SELECT name="ID_USER">
                             <?php
-                                $listePersonnes = $bdd->query("SELECT ID_utilisateur, Nom, Prenom FROM utilisateur ORDER BY Nom ASC");
+                                $listePersonnes = $bdd->query("SELECT ID_utilisateur, Nom, Prenom FROM utilisateur ORDER BY ID_utilisateur ASC");
 
                                 while($row = $listePersonnes->fetch()) {
                                     echo "<OPTION value='".$row['ID_utilisateur']."'>".$row['Nom']." ".$row['Prenom']."</OPTION>";
@@ -96,6 +96,7 @@
         </table> <br><br><br><br><br><br>
         <a href="about.php">À propos de TrackSwim</a>
         
+
 
     </body>
 

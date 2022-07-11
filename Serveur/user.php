@@ -57,7 +57,7 @@
             # récupération des données des performances en faisant tout le cheminement des BD
             # Ordre : Utilisateur -> Sessions -> Performances
 
-            $sessions = $bdd->query("SELECT ID_session FROM session WHERE ID_user=".$USER_ID." AND Debut=\"".$SESSION_DATE."\"");
+            $sessions = $bdd->query("SELECT ID_session FROM session WHERE ID_utilisateur=".$USER_ID." AND DATE(Debut)=\"".$SESSION_DATE."\" ORDER BY ID_session");
             if (!empty($sessions->rowCount())) {
                 foreach ($sessions as $session) {
                     # Récupération ID piscine pour déterminer la longueur totale nagée

@@ -18,6 +18,7 @@ BUTTON1 = 17
 BUTTON2 = 22
 BUTTON3 = 25
 SECONDE = 1000 #ms
+MINUTE = 60000 #ms
 
 ### FONCTIONS DE TRAITEMENT DES MESURES ###
 def millis():
@@ -83,28 +84,73 @@ def ini_reader(read_pow):
 
     return reader
 
-# Ajouter un tag à la base de données
-def add_tag(reader, list):
-    if not TS_var.etat_ajout_tag: # cas 0 : ne rien faire
-        pass
+class Tag_to_DB():
+    """Classe régissant les procédures de récolte et d'envoi de nouveaux tags dans la base données.
+    Cette classe ne doit être utilisé que pour le rajout de tag et non pas la réception et envoi de données (voir data())"""
+    def __init__(self):
+        self.stock_tag = [] 
 
-    elif TS_var.etat_ajout_tag == 1: # cas 1 : scanner une fois et enregister les tags dans une liste temporaire
+    def manage_tags(self, reader):
+        """Fonction principale de la classe Tag_to_DB. À passer dans le main,
+        là où l'on souhaite traiter la configuration de nouveaux tags.
+        La variable globale TS_var.etat_ajout_tag permet de dicter (switch case 3 cas) la façon dont le code doit se comporter\n
+        Arguments : soit-même, MERCURY reader à initialiser en dehors de la fonction avec ini_reader()
+        Retourne : NULL"""
+        if not TS_var.etat_ajout_tag: # cas 0 : ne rien faire
+            pass
+        elif TS_var.etat_ajout_tag == 1: # cas 1 : scanner une fois et enregister les tags dans une liste temporaire
+            self.read_tags(reader)
+        else: # cas 2 : Mettre à jour la base de données
+            self.upload_tags()
+
+    def read_tags(self, reader):
+        """Fonction effectuant une seule lecture des tags environnants. Cette dernière trie aussi et n'enregistre
+        que les tags qui n'ont pas encore été détectés, empêchant ainsi les doublons de tags dans la BD. Le tout est stocké dans self.stock_tag[]\n
+        Arguments : soit-même, MERCURY reader à obtenir de add_tag()
+        Retourne : NULL"""
         GPIO.output(LED_BLUE, GPIO.HIGH)
         for tag in reader.read():
-            if list:
-                if not tag.epc in list:
-                    list.append(tag.epc)
+            if self.stock_tag:
+                if not tag.epc in self.stock_tag:
+                    self.stock_tag.append(tag.epc)
             else:
-                list.append(tag.epc)
+                self.stock_tag.append(tag.epc)
 
         GPIO.output(LED_BLUE, GPIO.LOW)
 
-    else: # cas 2 : Mettre à jour la base de données
-        print(list)
-        list.clear()
-    
-    TS_var.etat_ajout_tag = 0
-    
+        TS_var.etat_ajout_tag = 0
+
+
+    def upload_tags(self):
+        """Fonction permettant de charger sur la base de données tout les tags stockés dans self.stock_tag[].
+        Pour chaque tag, vérifie si le tag n'est pas déjà présent dans la base de données et empêche l'envoi.
+        Supprime la liste une fois qu'elle a été traitée\n
+        Arguments : soit-même
+        Retourne : False si la connexion SQL n'est pas établie, sinon Vrai"""
+        if self.stock_tag != 0: # Au moins 1 tag à uploader
+            # Transformation en string pour lecture DB
+            for i in range(len(self.stock_tag)):
+                self.stock_tag[i] = str(self.stock_tag[i])
+
+            # Connexion à la BD
+            sql = DB_connect(TS_var.DB_connect)
+            if not sql:
+                return False
+
+            with sql:
+                with sql.cursor() as cursor:
+                    cursor.execute('SELECT * FROM tag')
+                    r = cursor.fetchall() # Récupération de tout les tags déjà présents dans la DB
+                    for ligne in r: # Éliminer les tags à double
+                        self.stock_tag.remove(ligne[0]) if ligne[0] in self.stock_tag else False
+
+                    for epc in self.stock_tag: # Insérer une nouvelle ligne pour chaque tag non présent
+                        cursor.execute('INSERT INTO tag (EPC) VALUES (%s)', epc)
+
+                    self.stock_tag.clear() # Nettoyer la liste
+
+        TS_var.etat_ajout_tag = 0
+        return True
 
 class data():
     """ Class régissant toutes les données récupérées lors du fonctionnement du module.\n
@@ -117,6 +163,7 @@ class data():
         self.sessions_to_upload = []
 
         self.sessions_total = 0
+        self.time_to_close = millis()
     
     ### Fonctions d'ajouts / suppressions de sessions ###
     def add_sessions_total(self):
@@ -151,7 +198,6 @@ class data():
         Retourne : NULL"""
         self.sessions_to_upload.clear()
 
-    
     ### Fonctions de traitement et envoi de données ###
     def data_treatment(self, TagReadData, THRESHOLD):
         """Fonction principale du traitement de données. Pour chaque TagReadData (contenant epc et timestamp),
@@ -162,7 +208,7 @@ class data():
         Arguments : soit-même, LIST TagReadData contenant epc et timestamp, CONST THRESHOLD permettant de déterminer
         si la valeur de temps obtenu est valide ou non
         Retourne : NULL"""
-        l = 0
+        i = 0
 
         for tag in TagReadData:
             for session in self.sessions_list: # Peut être en resverse ? gain de temps ?
@@ -172,26 +218,28 @@ class data():
                     elif tag.timestamp - session.depart[len(session.depart)-1] >= THRESHOLD:
                         session.add_arrivee(tag.timestamp) # ajoute la valeur d'arrivée
                         session.add_depart(tag.timestamp) # ajoute la valeur de départ
-                    else:
+                    elif TS_var.module[3] == 'Pause': # Remettre à jour la valeur du départ si en mode "avec pauses"
                         session.depart[len(session.depart)-1] = tag.timestamp
 
                     break
-                l += 1
+                i += 1 # Incrémenter en dehors du break -> ne pas incrémenter lorsque session valide trouvée
     
-            if l == len(self.sessions_list): # Testé tout les tags sans aucune session valide -> nouvelle session
+            if i == len(self.sessions_list): # Testé tout les tags sans aucune session valide -> nouvelle session
                 self.add_session(data.session(tag.epc, tag.timestamp))
 
-            l = 0
+            i = 0
         
     def close_sessions(self):
         """Fonction de clôture des sessions qui n'ont pas reçus de mise à jour depuis un certains temps.
         À appeler périodiquement dans le programme, juste avant la sauvegarde des données\n
         Arguments : soit-même
         Retourne : NULL"""
+        t = millis()
+
         for session in self.sessions_list:
             # Si la dernière valeur de départ a été pris il y a plus de 2 minutes et que la session est encore ouverte -> fermer session
             if session.session_end == None:
-                if (millis() - session.depart[len(session.depart) - 1] >= 2):
+                if (t - session.depart[len(session.depart) - 1] >= 3*MINUTE):
                     session.session_end = session.depart.pop() # retirer la dernière valeur de départ et la mettre en tant que fin de session
             
             if session.session_end != None:
@@ -206,7 +254,10 @@ class data():
         Pour chaque session, crée une ligne dans la table session. Ensuite, pour chaque paire départ-arrivee,
         crée une ligne dans la table perf\n
         Arguments : soit-même
-        Retourne : False si la connexion ne s'est pas établie correctement"""
+        Retourne : False si la connexion ne s'est pas établie correctement, Vrai si l'écriture s'est correctement déroulée"""
+        if not self.sessions_to_upload:
+            return True
+
         sql = DB_connect(TS_var.DB_connect)
         if not sql:
             return False
@@ -219,7 +270,7 @@ class data():
                     r = cursor.fetchone()[0] #normalement pas de doublon, prend le premier unqiuement index 0
 
                     # Etape 2 : Trouver l'ID_utilisateur correspondant à ID_tag
-                    cursor.execute("SELECT ID_user FROM association_utilisateur_tag WHERE ID_tag=%s", r)
+                    cursor.execute("SELECT ID_utilisateur FROM association_utilisateur_tag WHERE ID_tag=%s", r)
                     r = cursor.fetchone()[0] #normalement pas de doublon, prend le premier unqiuement index 0
 
                     # Etape 3 : Insérer une nouvelle session pour cet ID_utilisateur et récupérer l'ID_session
@@ -234,7 +285,7 @@ class data():
                     for i in range(len(session.depart)):
                         command = "INSERT INTO perf (Depart, Arrivee, ID_session) VALUES (%s, %s, %s)"
                         cursor.execute(command, (session.depart[i], session.arrivee[i], ID_session))
-
+        return True
 
     class session():
         """ Sous classe de data. Une session contient les éléments clés comme l'EPC du tag auquel
@@ -291,7 +342,6 @@ def select_addTag_state(channel):
     Ne renvoi rien mais modifie la variable globale correspondante\n
     Arguments : channel (interrupt)
     Retourne : NULL """
-
     if not TS_var.etat_module:
         if not GPIO.input(BUTTON2): # Bouton appuyé ?
             TS_var.button2timer = millis() # Si oui, temps actuel retenu
@@ -312,7 +362,6 @@ def switch_module_state(channel):
 class rgb():
     """ Classe régissant les paramètres des LEDs RGB
     Arguments : INT GPIO num rouge, INT GPIO num green, INT GPIO num bleu"""
-
     def __init__(self, r, g, b):
         self.r = r
         self.g = g
@@ -322,7 +371,6 @@ class config():
     """ Classe régissant le fichier de configuration
     Peut simplement être déclarée comme "config('config.ini')" pour initialiser les paramètres
     Arguments : STRING nom du fichier de configuration (config.ini)"""
-
     def __init__(self, configname):
         self.name = configname
         self.config = configparser.ConfigParser()
@@ -345,12 +393,15 @@ class config():
         """ Fonction lisant le fichier de configuration et initialisant les variables globales\n
         Arguments : soit-même
         Retourne : NULL"""
-
         self.config.read(self.name)
 
         if 'Module' in self.config and 'DB_con' in self.config:
             for key in self.config['Module']:
                 TS_var.module.append(self.config['Module'][key])
+
+            # Mode par défaut = Pause
+            if TS_var.module[3] != 'Pause' or TS_var.module[3] != 'Continu':
+                TS_var.module[3] = 'Pause'
 
             for key in self.config['DB_con']:
                 TS_var.DB_connect.append(self.config['DB_con'][key])
@@ -363,21 +414,18 @@ class config():
         """Fonction vérifiant si le fichier de configuration existe\n
         Arguments : soit-même
         Retourne : BOOL : Vrai si trouvé, sinon Faux"""
-
         return True if os.path.exists(self.name) else False
 
     def config_reset(self):
         """Fonction remettant à zéro les valeurs du fichier de configuration. Se calque sur le fichier reset_config.ini\n
         Arguments : soit-même
         Retourne : NULL"""
-
         shutil.copy("reset_config.ini", "config.ini")
 
     def config_write_module(self):
         """Fonction se connectant, récupérant et modifiant les paramètres [Module] du fichier de configuration\n
         Arguments : soit-même
-        Retourne : NULL"""
-
+        Retourne : False si aucune connexion n'est réalisée, Vrai si l'écriture s'est passée correctement"""
         sql = DB_connect(TS_var.DB_connect)
         if not sql:
             return False
@@ -397,16 +445,18 @@ class config():
         with open(self.name, 'w') as configfile:
             self.config.write(configfile)
 
+        return True
 
 def DB_connect(id_con):
     """Fonction se connectant à la base de donnée MySQL selon les paramètres de connexion donnés\n
-    Arguments : LISTE information de connexion, au format : ['hôte', 'utilisateur', 'mots de passe', 'base de données']
+    Arguments : LISTE information de connexion, au format :
+    [STR 'hôte', INT 'port', STR 'utilisateur', STR 'mots de passe', STR 'base de données']
     Retourne : PYMYSQL objet de connexion si connexion OK, sinon BOOL Faux"""
-
     try:
         return pymysql.connect(host=id_con[0],
-                user=id_con[1],
-                password=id_con[2],
-                database=id_con[3])
+                port=int(id_con[1]),
+                user=id_con[2],
+                password=id_con[3],
+                database=id_con[4])
     except:
         return False
