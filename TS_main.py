@@ -106,7 +106,8 @@ if __name__ == '__main__':
 
     # Calcul du temps minimal pour un aller retour de module[l_piscine] mètres
     # Si un utilisateur réalise un temps plus petit que celui-ci, il n'est pas compté
-    T_MIN = int(float(TS_var.module[2])/V_MAX)
+    t_min = int(float(TS_var.module[2])/V_MAX)
+    print('Temps de threshold: ', t_min)
 
     # Main
     try:
@@ -144,7 +145,7 @@ if __name__ == '__main__':
                 if TS_var.q.qsize() != 0:
                     r = TS_var.q.get()
                     if r: # Données reçues -> traitement + mise à jour des écrans
-                        main_data.data_treatment(r, T_MIN)
+                        main_data.data_treatment(r, t_min)
                         ecrans.update_displays(r, main_data)
                     else:
                         ecrans.clear_screens()
