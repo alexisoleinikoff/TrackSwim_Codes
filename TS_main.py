@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
     # Calcul du temps minimal pour un aller retour de module[l_piscine] mètres
     # Si un utilisateur réalise un temps plus petit que celui-ci, il n'est pas compté
-    T_MIN = int(float(TS_var.module[2])/V_MAX)
+    T_MIN = int(float(TS_var.module[2])/V_MAX)*1000
 
     # Main
     try:
@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
                     main_data.close_sessions()
                     main_data.upload_closed_sessions()
-                    
+
             
             else: # Mode configuration
                 tag_data.manage_tags(reader)
