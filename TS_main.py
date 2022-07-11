@@ -145,12 +145,14 @@ if __name__ == '__main__':
                 if TS_var.q.qsize() != 0:
                     r = TS_var.q.get()
                     if r:
+                        print('Data récoltée')
                         main_data.data_treatment(r, T_MIN)
                         
                     start_new_thread = True
 
                 # Vérification et clôture des sessions
                 if millis() - main_data.time_to_close >= 2*MINUTE:
+                    print('Vérification des sessions ...')
                     main_data.close_sessions()
                     main_data.upload_closed_sessions()
 
