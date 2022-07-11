@@ -91,15 +91,16 @@ if __name__ == '__main__':
     #buzz.start(10)
 
     # Initialisation des écrans
-    tmg = tm1637.TM1637(CLK_GREEN, DIO_GREEN) #GPIO NUM, écran vert, en haut
-    tmb = tm1637.TM1637(CLK_BLUE, DIO_BLUE) #GPIO NUM, écran bleu, en bas
-    tmb.brightness(1) # luminosité (de 1 à 7)
-    tmg.brightness(7)
-    tmb.write([0,0,0,0,0,0]) # valeurs initiales (écran vide)
-    tmg.write([0,0,0,0,0,0])
+    #tmg = tm1637.TM1637(CLK_GREEN, DIO_GREEN) #GPIO NUM, écran vert, en haut
+    #tmb = tm1637.TM1637(CLK_BLUE, DIO_BLUE) #GPIO NUM, écran bleu, en bas
+    #tmb.brightness(1) # luminosité (de 1 à 7)
+    #tmg.brightness(7)
+    #tmb.write([0,0,0,0,0,0]) # valeurs initiales (écran vide)
+    #tmg.write([0,0,0,0,0,0])
 
     # Configuration initiale config.ini
     config('config.ini')
+    ecrans = six_digits(CLK_BLUE, DIO_BLUE, CLK_GREEN, DIO_GREEN)
     main_data = data()
     tag_data = Tag_to_DB()
 
@@ -122,20 +123,18 @@ if __name__ == '__main__':
 
                     t.join()
                     reader = ini_reader(MIN_READ_POWER)
-                    tmg.write(tmg.encode_string('CONFIG'))
+                    ecrans.display_tmg('CONFIG')
 
                 TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
 
 
             # "Switch case" du mode de fonctionnement
             if(TS_var.etat_module): # Fonctionnement continu
-
                 # Crée un nouveau thread si les valeurs de la queue ont été récupérés
                 # et que le nombre de thread actif == 1 (== seul le main est actif)
                 if start_new_thread and active_count() == 1:
                     t = Thread(target=read_continuous)
                     t.start()
-                    print('Nouveau thread')
                     start_new_thread = False
 
                 # Vérifie si la queue est vide et récupére et traite les données si c'est le cas
@@ -144,9 +143,11 @@ if __name__ == '__main__':
                 # q.get() met en pause le programme tant qu'il n'a rien dans la queue
                 if TS_var.q.qsize() != 0:
                     r = TS_var.q.get()
-                    if r:
+                    if r: # Données reçues -> traitement + mise à jour des écrans
                         main_data.data_treatment(r, T_MIN)
-                        print(main_data.sessions_list[0].depart[len(main_data.sessions_list[0].depart)-1])
+                        ecrans.update_displays(r, main_data)
+                    else:
+                        ecrans.clear_screens()
                         
                     start_new_thread = True
 
@@ -157,18 +158,17 @@ if __name__ == '__main__':
                     main_data.upload_closed_sessions()
 
                 # Mise à jour de l'écran
-                if millis() - t1 > T_UPDATE_SCREEN:
-                    t1 = millis()
-                    tmg.write(tmg.encode_string(millis_to_mmssms(t_initial, millis())))
-                    tmb.write(tmb.encode_string(millis_to_hhmmss(t_initial, millis())))
-            
+                #if millis() - t1 > T_UPDATE_SCREEN:
+                 #   t1 = millis()
+                  #  tmg.write(tmg.encode_string(millis_to_mmssms(t_initial, millis())))
+                   # tmb.write(tmb.encode_string(millis_to_hhmmss(t_initial, millis())))
             
             else: # Mode configuration
                 tag_data.manage_tags(reader)
 
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
-                    tmb.write(tmb.encode_string(str(len(tag_data.stock_tag))+' EPC'))
+                    ecrans.display_tmb(str(len(tag_data.stock_tag))+' EPC')
 
     except KeyboardInterrupt:
         GPIO.cleanup()

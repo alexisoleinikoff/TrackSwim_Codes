@@ -8,7 +8,8 @@ import pymysql
 import shutil
 import configparser
 import RPi.GPIO as GPIO
-import mercury
+import mercury #https://github.com/gotthardp/python-mercuryapi
+import tm1637 #https://github.com/depklyon/raspberrypi-tm1637
 import TS_var
 
 ### Constantes (dupliquées de TS_main.py)
@@ -27,34 +28,6 @@ def millis():
     Retourne : INTEGER, temps en millisecondes """
 
     return int(time.time()*1000)
-
-
-def millis_to_hhmmss(t_initial, t_fin):
-    """Fonction transformant la différence entre deux temps donnés en millisecondes
-    en un string au format "hh:mm:ss"\n
-    Arguments : INT Temps 1, INT Temps 2
-    Retourne : STRING au format hh:mm:ss """
-
-    x = str(timedelta(milliseconds = t_fin - t_initial))
-    x = x.split('.')[0]
-    if len(x) < 8:
-        x = '0' + x
-    return x
-
-
-def millis_to_mmssms(t_initial, t_fin):
-    """Fonction transformant la différence entre deux temps donnés en millisecondes
-    en un string au format "mm:ss:msms"\n
-    Arguments : INT Temps 1, INT Temps 2
-    Retourne : STRING au format mm:ss:msms"""
-
-    x = str(timedelta(milliseconds = t_fin - t_initial))
-    x = x.split(':')
-    x = x[1] + ':' + x[2]
-    x = x.replace('.',':')[:8]
-    if len(x) < 8:
-        x = x + ':00'
-    return x
 
 def read_continuous():
     """ Fonction à passer dans un nouveau thread.
@@ -185,7 +158,7 @@ class data():
         Retourne : NULL"""
         self.sessions_list.remove(session)
 
-    
+
     def add_sessions_to_upload(self, session):
         """Ajoute une session à la liste de sessin à sauvegarder
         Arguments : soit-même, SESSION session à ajouter
@@ -274,7 +247,7 @@ class data():
                     r = cursor.fetchone()[0] #normalement pas de doublon, prend le premier unqiuement index 0
 
                     # Etape 3 : Insérer une nouvelle session pour cet ID_utilisateur et récupérer l'ID_session
-                    command = "INSERT INTO session (Debut, Fin, ID_piscine, ID_user) VALUES (%s, %s, %s, %s)"
+                    command = "INSERT INTO session (Debut, Fin, ID_piscine, ID_utilisateur) VALUES (%s, %s, %s, %s)"
                     cursor.execute(command, (datetime.fromtimestamp(session.session_start),
                                             datetime.fromtimestamp(session.session_end),
                                             TS_var.module[1], r))
@@ -329,7 +302,6 @@ class data():
             return True if self.EPC == EPC and self.session_end == None else False
 
 ### FONCTIONS DE CONTRÔLE DU MODULE ###
-
 def button1_callback(channel):
     """ Fonction d'appel lors d'une detection d'interuption sur le bouton 1.
     Ne renvoi rien mais modifie la variable globale correspondante\n
@@ -358,6 +330,72 @@ def switch_module_state(channel):
     Retourne : NULL """
 
     TS_var.etat_module = not TS_var.etat_module
+
+class six_digits():
+    def __init__(self, CLK_BLUE, DIO_BLUE, CLK_GREEN, DIO_GREEN):
+        self.tmg = tm1637.TM1637(CLK_GREEN, DIO_GREEN) #GPIO NUM, écran vert, en haut
+        self.tmb = tm1637.TM1637(CLK_BLUE, DIO_BLUE) #GPIO NUM, écran bleu, en bas
+
+        self.tmb.brightness(1) # luminosité (de 1 à 7)
+        self.tmg.brightness(7)
+
+        self.tmb.write([0,0,0,0,0,0]) # valeurs initiales (écran vide)
+        self.tmg.write([0,0,0,0,0,0])
+
+    def update_displays(self, TagReadData, data):
+        rssi_list = []
+
+        for tag in TagReadData: # stocker tout les rssis des tags scannés
+            rssi_list.append(tag.rssi)
+
+        if not rssi_list: # vide ou pas
+            return False
+
+        index_max = rssi_list.index(max(rssi_list)) # trouver indexe où est la valeur max
+        EPC_to_display = TagReadData[index_max].epc
+
+        for session in data.sessions_list: 
+            if session.is_EPC_and_active(EPC_to_display): # Vérifier l'EPC correspondant pour une session ouverte
+                if session.arrivee: # cas 'initiale' premier tag pas encore d'arrivée
+                    self.display_tmb(self.millis_to_mmssms(len(session.depart) - 2, len(session.arrivee) - 2))
+                else:
+                    self.display_tmg('0----0')
+
+    def display_tmg(self, string):
+        self.tmg.write(self.tmg.encode_string(string))
+
+    def display_tmb(self, string):
+        self.tmb.write(self.tmb.encode_string(string))
+
+    def clear_screens(self):
+        self.tmb.write([0,0,0,0,0,0])
+        self.tmg.write([0,0,0,0,0,0])
+
+    def millis_to_hhmmss(t_initial, t_fin):
+        """Fonction transformant la différence entre deux temps donnés en millisecondes
+        en un string au format "hh:mm:ss"\n
+        Arguments : INT Temps 1, INT Temps 2
+        Retourne : STRING au format hh:mm:ss """
+
+        x = str(timedelta(milliseconds = t_fin - t_initial))
+        x = x.split('.')[0]
+        if len(x) < 8:
+            x = '0' + x
+        return x
+
+    def millis_to_mmssms(t_initial, t_fin):
+        """Fonction transformant la différence entre deux temps donnés en millisecondes
+        en un string au format "mm:ss:msms"\n
+        Arguments : INT Temps 1, INT Temps 2
+        Retourne : STRING au format mm:ss:msms"""
+
+        x = str(timedelta(milliseconds = t_fin - t_initial))
+        x = x.split(':')
+        x = x[1] + ':' + x[2]
+        x = x.replace('.',':')[:8]
+        if len(x) < 8:
+            x = x + ':00'
+        return x
 
 class rgb():
     """ Classe régissant les paramètres des LEDs RGB
