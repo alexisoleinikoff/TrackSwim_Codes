@@ -114,6 +114,7 @@ if __name__ == '__main__':
                 else: # True -> False : Continu -> Config
                     t.join() # attente de la fin du thread
                     TS_var.q.get() # clear la queue
+                    ecrans.clear_screens()
                     ecrans.display_tmg('CONFIG')
                     print('Continu -> Config')
 
@@ -147,11 +148,11 @@ if __name__ == '__main__':
                 if millis() - main_data.time_to_close >= 2*MINUTE:
                     main_data.time_to_close = millis()
 
-                    ('Commencer la clôture de session ...')
+                    print('Commencer la clôture de session ...')
                     main_data.close_sessions()
-                    ('... [', len(main_data.sessions_to_upload), "] sessions ont été fermées et sont prêtes à l'envoi")
+                    print('... [', len(main_data.sessions_to_upload), "] sessions ont été fermées et sont prêtes à l'envoi")
                     main_data.upload_closed_sessions()
-                    ('Envoi terminé. Sessions en cours : [',len(main_data.sessions_list), '] -- Sessions à envoyer : [' , len(main_data.sessions_to_upload), ']')
+                    print('Envoi terminé. Sessions en cours : [',len(main_data.sessions_list), '] -- Sessions à envoyer : [' , len(main_data.sessions_to_upload), ']')
 
             # Mode configuration
             else: 

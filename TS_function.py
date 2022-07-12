@@ -206,10 +206,8 @@ class data():
             for session in self.sessions_list: # Peut être en resverse ? gain de temps ?
                 if session.is_EPC_and_active(tag.epc): #tag + session_end == none
                     if len(session.depart) <= len(session.arrivee):
-                        print('premier départ')
                         session.add_depart(tag.timestamp)
                     elif tag.timestamp - session.depart[len(session.depart)-1] >= THRESHOLD:
-                        print('Arrivée valide!')
                         session.add_arrivee(tag.timestamp) # ajoute la valeur d'arrivée
                         session.add_depart(tag.timestamp) # ajoute la valeur de départ
                     elif TS_var.module[3] == 'Pause': # Remettre à jour la valeur du départ si en mode "avec pauses"
