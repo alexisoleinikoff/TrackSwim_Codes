@@ -27,7 +27,6 @@ if __name__ == '__main__':
     BUTTON3 = 25
     ENABLE =  8
     BUZZER = 18
-    led_wifi = rgb(10, 9, 11)
     CLK_GREEN = 3
     DIO_GREEN = 2
     CLK_BLUE = 24
@@ -57,17 +56,12 @@ if __name__ == '__main__':
     GPIO.setup(ENABLE, GPIO.LOW)
 
     # Leds
+    led_wifi = rgb(10, 9, 11)
+    GPIO.output(led_wifi.r, GPIO.HIGH)
     GPIO.setup(LED_YELLOW, GPIO.OUT)
     GPIO.setup(LED_BLUE, GPIO.OUT)
-    GPIO.setup(led_wifi.r, GPIO.OUT)
-    GPIO.setup(led_wifi.g, GPIO.OUT)
-    GPIO.setup(led_wifi.b, GPIO.OUT)
-
     GPIO.output(LED_BLUE, GPIO.LOW)
     GPIO.output(LED_YELLOW, GPIO.LOW)
-    GPIO.output(led_wifi.r, GPIO.LOW)
-    GPIO.output(led_wifi.g, GPIO.LOW)
-    GPIO.output(led_wifi.b, GPIO.LOW)
 
     # Interuption sur le bouton 1 (bouton de gestion wifi/RàZ)
     GPIO.setup(BUTTON1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -109,7 +103,7 @@ if __name__ == '__main__':
             # Au lancement du module, commence toujours entrer dans la 1ère condition config->continu
             if TS_var.etat_module != TS_var.old_etat_module:
                 TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
-                
+
                 if TS_var.etat_module: # False -> True : Config -> Continu
                     print('Config -> Continu')
                     # Crée un nouveau thread si les valeurs de la queue ont été récupérés

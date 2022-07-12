@@ -429,6 +429,14 @@ class rgb():
         self.g = g
         self.b = b
 
+        GPIO.setup(self.r, GPIO.OUT)
+        GPIO.setup(self.g, GPIO.OUT)
+        GPIO.setup(self.b, GPIO.OUT)
+
+        GPIO.output(self.r, GPIO.LOW)
+        GPIO.output(self.g, GPIO.LOW)
+        GPIO.output(self.b, GPIO.LOW)
+
 class config():
     """ Classe régissant le fichier de configuration
     Peut simplement être déclarée comme "config('config.ini')" pour initialiser les paramètres
@@ -515,10 +523,14 @@ def DB_connect(id_con):
     [STR 'hôte', INT 'port', STR 'utilisateur', STR 'mots de passe', STR 'base de données']
     Retourne : PYMYSQL objet de connexion si connexion OK, sinon BOOL Faux"""
     try:
-        return pymysql.connect(host=id_con[0],
+        sql = pymysql.connect(host=id_con[0],
                 port=int(id_con[1]),
                 user=id_con[2],
                 password=id_con[3],
                 database=id_con[4])
+
+        if sql:
+            GPIO.output()
+            return sql
     except:
         return False
