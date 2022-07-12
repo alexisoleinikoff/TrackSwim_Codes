@@ -109,13 +109,14 @@ if __name__ == '__main__':
             # Au lancement du module, commence toujours entrer dans la 1ère condition config->continu
             if TS_var.etat_module != TS_var.old_etat_module:
                 if TS_var.etat_module: # False -> True : Config -> Continu
+                    print('Config -> Continu')
                     # Crée un nouveau thread si les valeurs de la queue ont été récupérés
                     # et que le nombre de thread actif == 1 (== seul le main est actif)
                     if active_count() == 1:
                         t = read_continuous(ENABLE, MAX_READ_POWER)
-                    time.sleep(0.2)
 
                 else: # True -> False : Continu -> Config
+                    print('Continu -> Config')
                     t.join() # attente de la fin du thread
                     TS_var.q.get() # clear la queue
                     ecrans.display_tmg('CONFIG')
