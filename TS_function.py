@@ -3,6 +3,7 @@
 # Modules standards
 from datetime import timedelta
 from datetime import datetime
+from threading import Thread
 import time
 import os
 import pymysql
@@ -34,28 +35,35 @@ def millis():
 
     return int(time.time()*1000)
 
-def read_continuous():
-    """ Fonction à passer dans un nouveau thread.
-    Initialise le lecteur, réalise une mesure, et envoi le résultat dans la queue\n
-    Arguments : NULL
-    Retourne : NULL (queue pour retourner les données)"""
+class read_continuous(Thread):
+    def __init__(self, enable_pin, read_pow):
+        Thread.__init__(self)
+        self.enable_pin = enable_pin
+        self.read_pow = read_pow
+        GPIO.setup(self.enable_pin, GPIO.OUTPUT)
+        self.daemon = False
+        self.start()
 
-    reader = ini_reader(2700)
-    time.sleep(0.5) # REMPLACER "SLEEP" PAR UN ON/OFF (ENABLE)
-    r = reader.read()
-    TS_var.q.put(False) if not r else TS_var.q.put(r)
+    def run(self):
+        time.sleep(0.4)
+        reader = ini_reader(self.enable_pin, self.read_pow)
+        r = reader.read()
+        GPIO.output(self.enable_pin, GPIO.LOW)
+        TS_var.q.put(False) if not r else TS_var.q.put(r)
 
 
-def ini_reader(read_pow):
+def ini_reader(enable_pin, read_pow):
     """ Initialise le lecteur RFID avec la puissance de lecture passée en argument\n
     Arguments : INT puissance de lecture
     Retourne : MERCURY reader"""
 
-    if read_pow < 0:
+    if read_pow < 1:
         read_pow = 1
     if read_pow > 2700:
         read_pow = 2700
 
+    GPIO.output(enable_pin, GPIO.HIGH)
+    time.sleep(0.1)
     reader = mercury.Reader("tmr:///dev/ttyS0", baudrate=115200)
     reader.set_region("EU3")
     reader.set_read_plan([1], "GEN2", read_power=read_pow)
@@ -68,7 +76,7 @@ class Tag_to_DB():
     def __init__(self):
         self.stock_tag = [] 
 
-    def manage_tags(self, reader):
+    def manage_tags(self, enable_pin, read_pow):
         """Fonction principale de la classe Tag_to_DB. À passer dans le main,
         là où l'on souhaite traiter la configuration de nouveaux tags.
         La variable globale TS_var.etat_ajout_tag permet de dicter (switch case 3 cas) la façon dont le code doit se comporter\n
@@ -77,23 +85,24 @@ class Tag_to_DB():
         if not TS_var.etat_ajout_tag: # cas 0 : ne rien faire
             pass
         elif TS_var.etat_ajout_tag == 1: # cas 1 : scanner une fois et enregister les tags dans une liste temporaire
-            self.read_tags(reader)
+            self.read_tags(enable_pin, read_pow)
         else: # cas 2 : Mettre à jour la base de données
             self.upload_tags()
 
-    def read_tags(self, reader):
+    def read_tags(self, enable_pin, read_pow):
         """Fonction effectuant une seule lecture des tags environnants. Cette dernière trie aussi et n'enregistre
         que les tags qui n'ont pas encore été détectés, empêchant ainsi les doublons de tags dans la BD. Le tout est stocké dans self.stock_tag[]\n
         Arguments : soit-même, MERCURY reader à obtenir de add_tag()
         Retourne : NULL"""
         GPIO.output(LED_BLUE, GPIO.HIGH)
+        reader = ini_reader(enable_pin, read_pow)
         for tag in reader.read():
             if self.stock_tag:
                 if not tag.epc in self.stock_tag:
                     self.stock_tag.append(tag.epc)
             else:
                 self.stock_tag.append(tag.epc)
-
+        GPIO.output(enable_pin, GPIO.LOW)
         GPIO.output(LED_BLUE, GPIO.LOW)
 
         TS_var.etat_ajout_tag = 0

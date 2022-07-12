@@ -6,7 +6,7 @@ sys.path.append('/home/tspi/.local/lib/python3.9/site-packages') # Lien vers tm1
 sys.path.append('/home/tspi/.local/lib/python3.9/site-packages/python-mercuryapi') # Lien vers python-mercuryapi
 
 # Modules standards
-from threading import Thread, active_count
+from threading import active_count
 import RPi.GPIO as GPIO
 
 # Modules créés
@@ -51,8 +51,10 @@ if __name__ == '__main__':
 
     ### Initialisation des GPIO
     GPIO.setmode(GPIO.BCM)
+
+    #
     GPIO.setup(ENABLE, GPIO.OUT)
-    GPIO.setup(ENABLE, GPIO.HIGH)
+    GPIO.setup(ENABLE, GPIO.LOW)
 
     # Leds
     GPIO.setup(LED_YELLOW, GPIO.OUT)
@@ -87,16 +89,10 @@ if __name__ == '__main__':
     #buzz = GPIO.PWM(BUZZER, 100000)
     #buzz.start(10)
 
-    # Initialisation des écrans
-    #tmg = tm1637.TM1637(CLK_GREEN, DIO_GREEN) #GPIO NUM, écran vert, en haut
-    #tmb = tm1637.TM1637(CLK_BLUE, DIO_BLUE) #GPIO NUM, écran bleu, en bas
-    #tmb.brightness(1) # luminosité (de 1 à 7)
-    #tmg.brightness(7)
-    #tmb.write([0,0,0,0,0,0]) # valeurs initiales (écran vide)
-    #tmg.write([0,0,0,0,0,0])
-
     # Configuration initiale config.ini
     config('config.ini')
+
+    # Initialisation des écrans et variables de stockage
     ecrans = six_digits(CLK_BLUE, DIO_BLUE, CLK_GREEN, DIO_GREEN)
     main_data = data()
     tag_data = Tag_to_DB()
@@ -109,44 +105,43 @@ if __name__ == '__main__':
     try:
         while True:
 
+            ### CLEANUP ###
             # Si un changement d'état dans le module -> cleanup avant de changer
+            # Au lancement du module, commence toujours entrer dans la 1ère condition config->continu
             if TS_var.etat_module != TS_var.old_etat_module:
                 if TS_var.etat_module: # False -> True : Config -> Continu
-                    print('Config -> Continu')
-                    start_new_thread = True
+                    # Crée un nouveau thread si les valeurs de la queue ont été récupérés
+                    # et que le nombre de thread actif == 1 (== seul le main est actif)
+                    if active_count() == 1:
+                        t = read_continuous(ENABLE, MAX_READ_POWER)
 
                 else: # True -> False : Continu -> Config
-                    print('Continu -> Config')
-
-                    t.join()
-                    reader = ini_reader(MIN_READ_POWER)
+                    t.join() # attente de la fin du thread
+                    TS_var.q.get() # clear la queue
                     ecrans.display_tmg('CONFIG')
 
                 TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
 
 
-            # "Switch case" du mode de fonctionnement
-            if(TS_var.etat_module): # Fonctionnement continu
-                # Crée un nouveau thread si les valeurs de la queue ont été récupérés
-                # et que le nombre de thread actif == 1 (== seul le main est actif)
-                if start_new_thread and active_count() == 1:
-                    t = Thread(target=read_continuous)
-                    t.start()
-                    start_new_thread = False
-
+            ### FONCTIONEMENT ###
+            # Fonctionnement continu
+            if(TS_var.etat_module):
                 # Vérifie si la queue est vide et récupére et traite les données si c'est le cas
                 # Passe à vrai la valeur permettant de relancer un thread
                 # /!\ D'abord vérifier si c'est vide, ensuite récupérer la données
                 # q.get() met en pause le programme tant qu'il n'a rien dans la queue
                 if TS_var.q.qsize() != 0:
+                    # Relance un thread, en paralelle du traitement de données
+                    if active_count() == 1:
+                        t = read_continuous(ENABLE, 2700)
+
                     r = TS_var.q.get()
                     if r: # Données reçues -> traitement + mise à jour des écrans
                         main_data.data_treatment(r, t_min)
                         ecrans.update_displays(r, main_data)
-                    else:
+                    else: # Si "False" reçu -> éteindre les écrans
                         ecrans.clear_screens()
                         
-                    start_new_thread = True
 
                 # Vérification et clôture des sessions
                 if millis() - main_data.time_to_close >= 2*MINUTE:
@@ -155,9 +150,9 @@ if __name__ == '__main__':
                     main_data.close_sessions()
                     main_data.upload_closed_sessions()
 
-            
-            else: # Mode configuration
-                tag_data.manage_tags(reader)
+            # Mode configuration
+            else: 
+                tag_data.manage_tags(ENABLE, MIN_READ_POWER)
 
                 if millis() - t1 > T_UPDATE_SCREEN:
                     t1 = millis()
