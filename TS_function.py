@@ -259,11 +259,16 @@ class data():
                 for session in self.sessions_to_upload:
                     # Etape 1 : Trouver l'ID_tag correspondant à EPC
                     cursor.execute("SELECT ID_tag FROM tag WHERE EPC=%s", str(session.EPC))
+                    if not cursor.rowcount:
+                        continue
                     r = cursor.fetchone()[0] #normalement pas de doublon, prend le premier unqiuement index 0
 
                     # Etape 2 : Trouver l'ID_utilisateur correspondant à ID_tag
                     cursor.execute("SELECT ID_utilisateur FROM association_utilisateur_tag WHERE ID_tag=%s", r)
+                    if not cursor.rowcount:
+                        continue
                     r = cursor.fetchone()[0] #normalement pas de doublon, prend le premier unqiuement index 0
+                    
 
                     # Etape 3 : Insérer une nouvelle session pour cet ID_utilisateur et récupérer l'ID_session
                     command = "INSERT INTO session (Debut, Fin, ID_piscine, ID_utilisateur) VALUES (%s, %s, %s, %s)"
