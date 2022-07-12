@@ -21,9 +21,14 @@ import TS_var
 ### Constantes (dupliquées de TS_main.py)
 LED_YELLOW = 4
 LED_BLUE = 27
+LED_WIFI_R = 10
+LED_WIFI_B = 9
+LED_WIFI_G = 11
+
 BUTTON1 = 17
 BUTTON2 = 22
 BUTTON3 = 25
+
 SECONDE = 1000 #ms
 MINUTE = 60000 #ms
 
@@ -437,6 +442,21 @@ class rgb():
         GPIO.output(self.g, GPIO.LOW)
         GPIO.output(self.b, GPIO.LOW)
 
+    def light_red(self):
+        GPIO.output(self.r, GPIO.HIGH)
+        GPIO.output(self.g, GPIO.LOW)
+        GPIO.output(self.b, GPIO.LOW)
+
+    def light_green(self):
+        GPIO.output(self.r, GPIO.LOW)
+        GPIO.output(self.g, GPIO.HIGH)
+        GPIO.output(self.b, GPIO.LOW)
+
+    def light_blue(self):
+        GPIO.output(self.r, GPIO.LOW)
+        GPIO.output(self.g, GPIO.LOW)
+        GPIO.output(self.b, GPIO.HIGH)
+
 class config():
     """ Classe régissant le fichier de configuration
     Peut simplement être déclarée comme "config('config.ini')" pour initialiser les paramètres
@@ -530,7 +550,8 @@ def DB_connect(id_con):
                 database=id_con[4])
 
         if sql:
-            GPIO.output()
+            TS_var.led_wifi.light_green()
             return sql
     except:
+        TS_var.led_wifi.light_red()
         return False

@@ -5,6 +5,9 @@ from queue import Queue
 module = []
 DB_connect = []
 
+# LED RGB pour indicateur wifi
+led_wifi = None
+
 # Variables d'interuption
 flagButton1 = False
 

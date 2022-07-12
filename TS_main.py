@@ -56,8 +56,7 @@ if __name__ == '__main__':
     GPIO.setup(ENABLE, GPIO.LOW)
 
     # Leds
-    led_wifi = rgb(10, 9, 11)
-    GPIO.output(led_wifi.r, GPIO.HIGH)
+    TS_var.led_wifi= rgb(10, 9, 11)
     GPIO.setup(LED_YELLOW, GPIO.OUT)
     GPIO.setup(LED_BLUE, GPIO.OUT)
     GPIO.output(LED_BLUE, GPIO.LOW)
