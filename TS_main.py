@@ -52,7 +52,7 @@ if __name__ == '__main__':
     ### Initialisation des GPIO
     GPIO.setmode(GPIO.BCM)
 
-    #
+    # Pin enable, permettant de contrôler on/off le module RFID
     GPIO.setup(ENABLE, GPIO.OUT)
     GPIO.setup(ENABLE, GPIO.LOW)
 

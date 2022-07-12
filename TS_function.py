@@ -40,7 +40,7 @@ class read_continuous(Thread):
         Thread.__init__(self)
         self.enable_pin = enable_pin
         self.read_pow = read_pow
-        GPIO.setup(self.enable_pin, GPIO.OUTPUT)
+        GPIO.setup(self.enable_pin, GPIO.OUT)
         self.daemon = False
         self.start()
 
