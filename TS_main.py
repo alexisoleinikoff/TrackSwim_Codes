@@ -5,14 +5,8 @@ import sys
 sys.path.append('/home/tspi/.local/lib/python3.9/site-packages') # Lien vers tm1637
 sys.path.append('/home/tspi/.local/lib/python3.9/site-packages/python-mercuryapi') # Lien vers python-mercuryapi
 
-# Modules téléchargés
-import mercury #https://github.com/gotthardp/python-mercuryapi
-import tm1637 #https://github.com/depklyon/raspberrypi-tm1637
-
 # Modules standards
-from datetime import timedelta
 from threading import Thread, active_count
-import time
 import RPi.GPIO as GPIO
 
 # Modules créés
@@ -31,6 +25,7 @@ if __name__ == '__main__':
     BUTTON1 = 17
     BUTTON2 = 22
     BUTTON3 = 25
+    ENABLE =  8
     BUZZER = 18
     led_wifi = rgb(10, 9, 11)
     CLK_GREEN = 3
@@ -56,6 +51,8 @@ if __name__ == '__main__':
 
     ### Initialisation des GPIO
     GPIO.setmode(GPIO.BCM)
+    GPIO.setup(ENABLE, GPIO.OUT)
+    GPIO.setup(ENABLE, GPIO.HIGH)
 
     # Leds
     GPIO.setup(LED_YELLOW, GPIO.OUT)

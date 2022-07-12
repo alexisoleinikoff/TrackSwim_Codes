@@ -1,5 +1,6 @@
 ### FICHIER DES FONCTIONS ET CLASSES ###
 
+# Modules standards
 from datetime import timedelta
 from datetime import datetime
 import time
@@ -8,8 +9,12 @@ import pymysql
 import shutil
 import configparser
 import RPi.GPIO as GPIO
+
+# Modules installés
 import mercury #https://github.com/gotthardp/python-mercuryapi
 import tm1637 #https://github.com/depklyon/raspberrypi-tm1637
+
+# Modules créés
 import TS_var
 
 ### Constantes (dupliquées de TS_main.py)
