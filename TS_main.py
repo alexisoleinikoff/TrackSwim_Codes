@@ -104,7 +104,6 @@ if __name__ == '__main__':
     # Main
     try:
         while True:
-
             ### CLEANUP ###
             # Si un changement d'état dans le module -> cleanup avant de changer
             # Au lancement du module, commence toujours entrer dans la 1ère condition config->continu
@@ -114,6 +113,7 @@ if __name__ == '__main__':
                     # et que le nombre de thread actif == 1 (== seul le main est actif)
                     if active_count() == 1:
                         t = read_continuous(ENABLE, MAX_READ_POWER)
+                    time.sleep(0.2)
 
                 else: # True -> False : Continu -> Config
                     t.join() # attente de la fin du thread
