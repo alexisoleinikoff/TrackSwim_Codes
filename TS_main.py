@@ -108,6 +108,8 @@ if __name__ == '__main__':
             # Si un changement d'état dans le module -> cleanup avant de changer
             # Au lancement du module, commence toujours entrer dans la 1ère condition config->continu
             if TS_var.etat_module != TS_var.old_etat_module:
+                TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
+                
                 if TS_var.etat_module: # False -> True : Config -> Continu
                     print('Config -> Continu')
                     # Crée un nouveau thread si les valeurs de la queue ont été récupérés
@@ -120,8 +122,6 @@ if __name__ == '__main__':
                     t.join() # attente de la fin du thread
                     TS_var.q.get() # clear la queue
                     ecrans.display_tmg('CONFIG')
-
-                TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
 
 
             ### FONCTIONEMENT ###
