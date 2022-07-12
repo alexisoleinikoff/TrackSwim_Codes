@@ -68,7 +68,7 @@ def ini_reader(enable_pin, read_pow):
         read_pow = 2700
 
     GPIO.output(enable_pin, GPIO.HIGH)
-    time.sleep(0.05)
+    time.sleep(0.035) # délai d'attente après la sortie de la mise en veille ~28ms
     reader = mercury.Reader("tmr:///dev/ttyS0", baudrate=115200)
     reader.set_region("EU3")
     reader.set_read_plan([1], "GEN2", read_power=read_pow)
@@ -358,6 +358,8 @@ def switch_module_state(channel):
 
 class six_digits():
     def __init__(self, CLK_BLUE, DIO_BLUE, CLK_GREEN, DIO_GREEN):
+        self.blank_screen = millis()
+
         self.tmg = tm1637.TM1637(CLK_GREEN, DIO_GREEN) #GPIO NUM, écran vert, en haut
         self.tmb = tm1637.TM1637(CLK_BLUE, DIO_BLUE) #GPIO NUM, écran bleu, en bas
 
@@ -382,13 +384,15 @@ class six_digits():
         for session in data.sessions_list: 
             if session.is_EPC_and_active(EPC_to_display): # Vérifier l'EPC correspondant pour une session ouverte
                 if session.arrivee: # cas 'initiale' premier tag pas encore d'arrivée
-                    a = len(session.arrivee)
-                    self.display_tmg(self.millis_to_mmssms(1000*session.depart[len(session.arrivee) - 1],
-                                                            1000*session.arrivee[len(session.arrivee) - 1]))
-                    self.display_tmb(str(a*2*int(float(TS_var.module[2]))))
+                    l = len(session.arrivee)
+                    self.display_tmg(self.millis_to_mmssms(1000*session.depart[l - 1],
+                                                            1000*session.arrivee[l - 1]))
+                    self.display_tmb(str(l*2*int(float(TS_var.module[2]))))
                 else:
-                    self.display_tmg('d----a')
+                    self.display_tmg('0')
                     self.display_tmb('0')
+        
+        self.blank_screen = millis()
 
     def display_tmg(self, string):
         self.tmg.write(self.tmg.encode_string(string))
@@ -550,8 +554,8 @@ def DB_connect(id_con):
                 database=id_con[4])
 
         if sql:
-            TS_var.led_wifi.light_green()
+            #TS_var.led_wifi.light_green()
             return sql
     except:
-        TS_var.led_wifi.light_red()
+        #TS_var.led_wifi.light_red()
         return False

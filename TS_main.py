@@ -33,6 +33,7 @@ if __name__ == '__main__':
     DIO_BLUE = 23
 
     T_UPDATE_SCREEN = 30 #ms
+    T_BLANK_SCREEN = 1000 #ms
     ANTI_BOUNCE = 200 #ms
     SECONDE = 1000 #ms
     MINUTE = 60000 #ms
@@ -104,17 +105,17 @@ if __name__ == '__main__':
                 TS_var.old_etat_module = TS_var.etat_module # Mise à jour de l'état du module
 
                 if TS_var.etat_module: # False -> True : Config -> Continu
-                    print('Config -> Continu')
                     # Crée un nouveau thread si les valeurs de la queue ont été récupérés
                     # et que le nombre de thread actif == 1 (== seul le main est actif)
                     if active_count() == 1:
                         t = read_continuous(ENABLE, MAX_READ_POWER)
+                    print('Config -> Continu')
 
                 else: # True -> False : Continu -> Config
-                    print('Continu -> Config')
                     t.join() # attente de la fin du thread
                     TS_var.q.get() # clear la queue
                     ecrans.display_tmg('CONFIG')
+                    print('Continu -> Config')
 
 
             ### FONCTIONEMENT ###
@@ -131,10 +132,14 @@ if __name__ == '__main__':
 
                     r = TS_var.q.get()
                     if r: # Données reçues -> traitement + mise à jour des écrans
+                        GPIO.output(LED_YELLOW, GPIO.HIGH)
                         main_data.data_treatment(r, t_min)
                         ecrans.update_displays(r, main_data)
-                    else: # Si "False" reçu -> éteindre les écrans
-                        ecrans.clear_screens()
+
+                    else:
+                        GPIO.output(LED_YELLOW, GPIO.LOW)
+                        if millis() - ecrans.blank_screen >= T_BLANK_SCREEN:
+                            ecrans.clear_screens()
                         
 
                 # Vérification et clôture des sessions
