@@ -63,7 +63,7 @@ def ini_reader(enable_pin, read_pow):
         read_pow = 2700
 
     GPIO.output(enable_pin, GPIO.HIGH)
-    time.sleep(0.1)
+    time.sleep(0.05)
     reader = mercury.Reader("tmr:///dev/ttyS0", baudrate=115200)
     reader.set_region("EU3")
     reader.set_read_plan([1], "GEN2", read_power=read_pow)
