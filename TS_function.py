@@ -213,7 +213,6 @@ class data():
                         session.add_arrivee(tag.timestamp) # ajoute la valeur d'arrivée
                         session.add_depart(tag.timestamp) # ajoute la valeur de départ
                     elif TS_var.module[3] == 'Pause': # Remettre à jour la valeur du départ si en mode "avec pauses"
-                        print('Arrivée non valide!')
                         session.depart[len(session.depart)-1] = tag.timestamp
 
                     break
@@ -282,7 +281,6 @@ class data():
                         cursor.execute(command, (session.depart[i], session.arrivee[i], ID_session))
         
         self.sessions_to_upload.clear()
-        print('envoi terminé')
         return True
 
     class session():
