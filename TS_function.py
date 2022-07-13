@@ -81,7 +81,7 @@ class Tag_to_DB():
     def __init__(self):
         self.stock_tag = [] 
 
-    def manage_tags(self, enable_pin, read_pow):
+    def manage_tags(self, enable_pin, read_pow, ecrans):
         """Fonction principale de la classe Tag_to_DB. À passer dans le main,
         là où l'on souhaite traiter la configuration de nouveaux tags.
         La variable globale TS_var.etat_ajout_tag permet de dicter (switch case 3 cas) la façon dont le code doit se comporter\n
@@ -90,11 +90,11 @@ class Tag_to_DB():
         if not TS_var.etat_ajout_tag: # cas 0 : ne rien faire
             pass
         elif TS_var.etat_ajout_tag == 1: # cas 1 : scanner une fois et enregister les tags dans une liste temporaire
-            self.read_tags(enable_pin, read_pow)
+            self.read_tags(enable_pin, read_pow, ecrans)
         else: # cas 2 : Mettre à jour la base de données
             self.upload_tags()
 
-    def read_tags(self, enable_pin, read_pow):
+    def read_tags(self, enable_pin, read_pow, ecrans):
         """Fonction effectuant une seule lecture des tags environnants. Cette dernière trie aussi et n'enregistre
         que les tags qui n'ont pas encore été détectés, empêchant ainsi les doublons de tags dans la BD. Le tout est stocké dans self.stock_tag[]\n
         Arguments : soit-même, MERCURY reader à obtenir de add_tag()
@@ -109,6 +109,7 @@ class Tag_to_DB():
                 self.stock_tag.append(tag.epc)
         GPIO.output(enable_pin, GPIO.LOW)
         GPIO.output(LED_BLUE, GPIO.LOW)
+        ecrans.display_tmb(str(len(self.stock_tag))+' EPC')
 
         TS_var.etat_ajout_tag = 0
 
@@ -360,6 +361,8 @@ def switch_module_state(channel):
 class six_digits():
     def __init__(self, CLK_BLUE, DIO_BLUE, CLK_GREEN, DIO_GREEN):
         self.blank_screen = millis()
+        self.time_switch_display = millis()
+        self.display_state = True # Vrai : affiche la distance parcourue, Faux : durée totale de la session
 
         self.tmg = tm1637.TM1637(CLK_GREEN, DIO_GREEN) #GPIO NUM, écran vert, en haut
         self.tmb = tm1637.TM1637(CLK_BLUE, DIO_BLUE) #GPIO NUM, écran bleu, en bas
@@ -377,22 +380,32 @@ class six_digits():
             rssi_list.append(tag.rssi)
 
         if not rssi_list: # vide ou pas
-            return False
+            return False # si vide, -> pas de donnée -> quitter la fonction
 
         index_max = rssi_list.index(max(rssi_list)) # trouver indexe où est la valeur max
         EPC_to_display = TagReadData[index_max].epc
 
         for session in data.sessions_list: 
             if session.is_EPC_and_active(EPC_to_display): # Vérifier l'EPC correspondant pour une session ouverte
-                if session.arrivee: # cas 'initiale' premier tag pas encore d'arrivée
+                if session.arrivee:
                     l = len(session.arrivee)
                     self.display_tmg(self.millis_to_mmssms(1000*session.depart[l - 1],
                                                             1000*session.arrivee[l - 1]))
-                    self.display_tmb(str(l*2*int(float(TS_var.module[2]))))
-                else:
+                    if self.display_state:
+                        self.display_tmb(str(l*2*int(float(TS_var.module[2])))) # distance totale
+                    else:
+                        self.display_tmb(self.millis_to_hhmmss(1000*session.session_start, millis()))  # temps de session
+                else: # cas 'initiale' premier tag pas encore d'arrivée
+                    self.time_switch_display = millis()
+                    self.display_state = True
                     self.display_tmg('0')
                     self.display_tmb('0')
         
+
+        if millis() - self.time_switch_display >= 5*SECONDE:
+            self.time_switch_display = millis()
+            self.display_state = not self.display_state
+
         self.blank_screen = millis()
 
     def display_tmg(self, string):

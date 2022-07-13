@@ -114,8 +114,8 @@ if __name__ == '__main__':
                 else: # True -> False : Continu -> Config
                     t.join() # attente de la fin du thread
                     TS_var.q.get() # clear la queue
-                    ecrans.clear_screens()
                     ecrans.display_tmg('CONFIG')
+                    ecrans.display_tmb(str(len(tag_data.stock_tag))+' EPC')
                     print('Continu -> Config')
 
 
@@ -136,11 +136,13 @@ if __name__ == '__main__':
                         GPIO.output(LED_YELLOW, GPIO.HIGH)
                         main_data.data_treatment(r, t_min)
                         ecrans.update_displays(r, main_data)
-                        print('Tag(s) détecté(s). Session en cours : [', len(main_data.sessions_list), ']')
+                        print('Tag(s) détecté(s). Sessions en cours : [', len(main_data.sessions_list), ']')
 
                     else:
                         GPIO.output(LED_YELLOW, GPIO.LOW)
                         if millis() - ecrans.blank_screen >= T_BLANK_SCREEN:
+                            ecrans.time_switch_display = millis()
+                            ecrans.display_state = True
                             ecrans.clear_screens()
                         
 
@@ -148,19 +150,15 @@ if __name__ == '__main__':
                 if millis() - main_data.time_to_close >= 2*MINUTE:
                     main_data.time_to_close = millis()
 
-                    print('Commencer la clôture de session ...')
+                    print('Commence la clôture de session ...')
                     main_data.close_sessions()
                     print('... [', len(main_data.sessions_to_upload), "] sessions ont été fermées et sont prêtes à l'envoi")
                     main_data.upload_closed_sessions()
-                    print('Envoi terminé. Sessions en cours : [',len(main_data.sessions_list), '] -- Sessions à envoyer : [' , len(main_data.sessions_to_upload), ']')
+                    print('Envoi terminé. Sessions en cours : [',len(main_data.sessions_list), '] -- Sessions encore à envoyer : [' , len(main_data.sessions_to_upload), ']')
 
             # Mode configuration
             else: 
-                tag_data.manage_tags(ENABLE, MIN_READ_POWER)
-
-                if millis() - t1 > T_UPDATE_SCREEN:
-                    t1 = millis()
-                    ecrans.display_tmb(str(len(tag_data.stock_tag))+' EPC')
+                tag_data.manage_tags(ENABLE, MIN_READ_POWER, ecrans)
 
 
             time.sleep(0.01) #dors 10 ms -> réduction de fréquence et gain en durée de vie de batterie
