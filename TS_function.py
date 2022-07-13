@@ -90,11 +90,13 @@ class Tag_to_DB():
         if not TS_var.etat_ajout_tag: # cas 0 : ne rien faire
             pass
         elif TS_var.etat_ajout_tag == 1: # cas 1 : scanner une fois et enregister les tags dans une liste temporaire
-            self.read_tags(enable_pin, read_pow, ecrans)
+            self.read_tags(enable_pin, read_pow)
+            ecrans.display_tmb(str(len(self.stock_tag))+' EPC')
         else: # cas 2 : Mettre à jour la base de données
             self.upload_tags()
+            ecrans.display_tmb(str(len(self.stock_tag))+' EPC')
 
-    def read_tags(self, enable_pin, read_pow, ecrans):
+    def read_tags(self, enable_pin, read_pow):
         """Fonction effectuant une seule lecture des tags environnants. Cette dernière trie aussi et n'enregistre
         que les tags qui n'ont pas encore été détectés, empêchant ainsi les doublons de tags dans la BD. Le tout est stocké dans self.stock_tag[]\n
         Arguments : soit-même, MERCURY reader à obtenir de add_tag()
@@ -109,7 +111,6 @@ class Tag_to_DB():
                 self.stock_tag.append(tag.epc)
         GPIO.output(enable_pin, GPIO.LOW)
         GPIO.output(LED_BLUE, GPIO.LOW)
-        ecrans.display_tmb(str(len(self.stock_tag))+' EPC')
 
         TS_var.etat_ajout_tag = 0
 
