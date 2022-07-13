@@ -61,7 +61,7 @@
                     <!-- Laisser vide pour retrait -->
                 </TD>
                 <TD colspan="1" align="left">
-                    a écrire
+                    <a href="https://www.pinterest.com/pin/swimming-moms--294915475592537220">Lien vers la source de l'image du logo</a>
                 </TD>
             </TR>
         </table>
