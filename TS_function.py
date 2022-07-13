@@ -50,7 +50,7 @@ class read_continuous(Thread):
         self.start()
 
     def run(self):
-        time.sleep(0.4)
+        time.sleep(0.5)
         print('commence scan')
         reader = ini_reader(self.enable_pin, self.read_pow)
         r = reader.read()
