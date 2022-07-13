@@ -51,8 +51,10 @@ class read_continuous(Thread):
 
     def run(self):
         time.sleep(0.4)
+        print('commence scan')
         reader = ini_reader(self.enable_pin, self.read_pow)
         r = reader.read()
+        print('fini scan')
         GPIO.output(self.enable_pin, GPIO.LOW)
         TS_var.q.put(False) if not r else TS_var.q.put(r)
 
