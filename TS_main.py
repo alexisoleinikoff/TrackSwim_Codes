@@ -162,6 +162,8 @@ if __name__ == '__main__':
                     t1 = millis()
                     ecrans.display_tmb(str(len(tag_data.stock_tag))+' EPC')
 
+
+            time.sleep(0.01) #dors 10 ms -> réduction de fréquence et gain en durée de vie de batterie
     except KeyboardInterrupt:
         GPIO.cleanup()
 
