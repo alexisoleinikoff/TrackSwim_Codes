@@ -114,6 +114,7 @@ if __name__ == '__main__':
                 else: # True -> False : Continu -> Config
                     t.join() # attente de la fin du thread
                     TS_var.q.get() # clear la queue
+                    GPIO.output(LED_YELLOW, GPIO.LOW)
                     ecrans.display_tmg('CONFIG')
                     ecrans.display_tmb(str(len(tag_data.stock_tag))+' EPC')
                     print('Continu -> Config')
