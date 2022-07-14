@@ -39,6 +39,7 @@ if __name__ == '__main__':
     MINUTE = 60000 #ms
 
     MAX_READ_POWER = 2700 #cdB
+    READ_POWER = 2000 #cdB
     MIN_READ_POWER = 1000 #cdB
 
     V_MAX = 2.39 # vitesse moyenne du record du monde de natation 50m en 20.91s (google)
@@ -108,7 +109,7 @@ if __name__ == '__main__':
                     # Crée un nouveau thread si les valeurs de la queue ont été récupérés
                     # et que le nombre de thread actif == 1 (== seul le main est actif)
                     if active_count() == 1:
-                        t = read_continuous(ENABLE, MAX_READ_POWER)
+                        t = read_continuous(ENABLE, READ_POWER)
                     print('Config -> Continu')
 
                 else: # True -> False : Continu -> Config
@@ -130,13 +131,14 @@ if __name__ == '__main__':
                 if TS_var.q.qsize() != 0:
                     # Relance un thread, en paralelle du traitement de données
                     if active_count() == 1:
-                        t = read_continuous(ENABLE, 2500)
+                        t = read_continuous(ENABLE, READ_POWER)
 
                     r = TS_var.q.get()
                     if r: # Données reçues -> traitement + mise à jour des écrans
                         GPIO.output(LED_YELLOW, GPIO.HIGH)
                         main_data.data_treatment(r, t_min)
                         ecrans.update_displays(r, main_data)
+                        print('Sessions actives : ', len(main_data.sessions_list))
                         #print('Tag(s) détecté(s). Sessions en cours : [', len(main_data.sessions_list), ']')
 
                     else:

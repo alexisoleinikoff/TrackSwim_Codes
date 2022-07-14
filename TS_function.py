@@ -225,7 +225,7 @@ class data():
                 self.add_session(data.session(tag.epc, tag.timestamp))
 
             i = 0
-        
+
     def close_sessions(self):
         """Fonction de clôture des sessions qui n'ont pas reçus de mise à jour depuis un certains temps.
         À appeler périodiquement dans le programme, juste avant la sauvegarde des données\n
