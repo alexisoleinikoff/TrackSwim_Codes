@@ -39,7 +39,7 @@ if __name__ == '__main__':
     MINUTE = 60000 #ms
 
     MAX_READ_POWER = 2700 #cdB
-    READ_POWER = 2000 #cdB
+    READ_POWER = 2200 #cdB
     MIN_READ_POWER = 1000 #cdB
 
     V_MAX = 2.39 # vitesse moyenne du record du monde de natation 50m en 20.91s (google)
@@ -110,7 +110,6 @@ if __name__ == '__main__':
                     # et que le nombre de thread actif == 1 (== seul le main est actif)
                     if active_count() == 1:
                         t = read_continuous(ENABLE, READ_POWER)
-                    print('Config -> Continu')
 
                 else: # True -> False : Continu -> Config
                     t.join() # attente de la fin du thread
@@ -118,7 +117,6 @@ if __name__ == '__main__':
                     GPIO.output(LED_YELLOW, GPIO.LOW)
                     ecrans.display_tmg('CONFIG')
                     ecrans.display_tmb(str(len(tag_data.stock_tag))+' EPC')
-                    print('Continu -> Config')
 
 
             ### FONCTIONEMENT ###
