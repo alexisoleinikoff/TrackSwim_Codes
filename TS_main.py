@@ -129,7 +129,7 @@ if __name__ == '__main__':
                 if TS_var.q.qsize() != 0:
                     # Relance un thread, en paralelle du traitement de données
                     if active_count() == 1:
-                        t = read_continuous(ENABLE, 2700)
+                        t = read_continuous(ENABLE, 2500)
 
                     r = TS_var.q.get()
                     if r: # Données reçues -> traitement + mise à jour des écrans
