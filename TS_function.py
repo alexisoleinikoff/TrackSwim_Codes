@@ -51,11 +51,9 @@ class read_continuous(Thread):
 
     def run(self):
         time.sleep(0.4)
-        #print('commence scan')
         reader = ini_reader(self.enable_pin, self.read_pow)
         r = reader.read()
         time.sleep(0.1)
-        #print('fini scan')
         GPIO.output(self.enable_pin, GPIO.LOW)
         TS_var.q.put(False) if not r else TS_var.q.put(r)
 
@@ -573,7 +571,7 @@ def DB_connect(id_con):
                 database=id_con[4])
 
         if sql:
-            TS_var.led_wifi.light_green()
+            TS_var.led_wifi.light_red()
             return sql
     except:
         TS_var.led_wifi.light_red()
