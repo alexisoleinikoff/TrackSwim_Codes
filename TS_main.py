@@ -39,7 +39,7 @@ if __name__ == '__main__':
     MINUTE = 60000 #ms
 
     MAX_READ_POWER = 2700 #cdB
-    READ_POWER = 2200 #cdB
+    READ_POWER = 2500 #cdB
     MIN_READ_POWER = 1000 #cdB
 
     V_MAX = 2.39 # vitesse moyenne du record du monde de natation 50m en 20.91s (google)
