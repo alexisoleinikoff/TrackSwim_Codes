@@ -53,11 +53,11 @@ class read_continuous(Thread):
     def run(self):
         time.sleep(0.4)
         reader = ini_reader(self.enable_pin, self.read_pow)
-        GPIO.ouput(self.blue_led_pin, GPIO.HIGH)
+        GPIO.output(self.blue_led_pin, GPIO.HIGH)
         r = reader.read()
         time.sleep(0.1)
         GPIO.output(self.enable_pin, GPIO.LOW)
-        GPIO.ouput(self.blue_led_pin, GPIO.LOW)
+        GPIO.output(self.blue_led_pin, GPIO.LOW)
         TS_var.q.put(False) if not r else TS_var.q.put(r)
 
 
