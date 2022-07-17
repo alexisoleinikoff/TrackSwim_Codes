@@ -109,7 +109,7 @@ if __name__ == '__main__':
                     # Crée un nouveau thread si les valeurs de la queue ont été récupérés
                     # et que le nombre de thread actif == 1 (== seul le main est actif)
                     if active_count() == 1:
-                        t = read_continuous(ENABLE, READ_POWER)
+                        t = read_continuous(ENABLE, LED_BLUE, READ_POWER)
 
                 else: # True -> False : Continu -> Config
                     t.join() # attente de la fin du thread
@@ -129,14 +129,13 @@ if __name__ == '__main__':
                 if TS_var.q.qsize() != 0:
                     # Relance un thread, en paralelle du traitement de données
                     if active_count() == 1:
-                        t = read_continuous(ENABLE, READ_POWER)
+                        t = read_continuous(ENABLE, LED_BLUE, READ_POWER)
 
                     r = TS_var.q.get()
                     if r: # Données reçues -> traitement + mise à jour des écrans
                         GPIO.output(LED_YELLOW, GPIO.HIGH)
                         main_data.data_treatment(r, t_min)
                         ecrans.update_displays(r, main_data)
-                        print('Sessions actives : ', len(main_data.sessions_list))
                         #print('Tag(s) détecté(s). Sessions en cours : [', len(main_data.sessions_list), ']')
 
                     else:
