@@ -41,9 +41,10 @@ def millis():
     return int(time.time()*1000)
 
 class read_continuous(Thread):
-    def __init__(self, enable_pin, read_pow):
+    def __init__(self, enable_pin, blue_led_pin, read_pow):
         Thread.__init__(self)
         self.enable_pin = enable_pin
+        self.blue_led_pin = blue_led_pin
         self.read_pow = read_pow
         GPIO.setup(self.enable_pin, GPIO.OUT)
         self.daemon = False
@@ -52,9 +53,11 @@ class read_continuous(Thread):
     def run(self):
         time.sleep(0.4)
         reader = ini_reader(self.enable_pin, self.read_pow)
+        GPIO.ouput(self.blue_led_pin, GPIO.HIGH)
         r = reader.read()
         time.sleep(0.1)
         GPIO.output(self.enable_pin, GPIO.LOW)
+        GPIO.ouput(self.blue_led_pin, GPIO.LOW)
         TS_var.q.put(False) if not r else TS_var.q.put(r)
 
 
