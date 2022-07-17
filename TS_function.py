@@ -571,7 +571,7 @@ def DB_connect(id_con):
                 database=id_con[4])
 
         if sql:
-            TS_var.led_wifi.light_red()
+            TS_var.led_wifi.light_blue()
             return sql
     except:
         TS_var.led_wifi.light_red()
