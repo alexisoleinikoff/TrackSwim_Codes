@@ -90,8 +90,8 @@ if __name__ == '__main__':
 
     # Buzzer
     GPIO.setup(BUZZER, GPIO.OUT)
-    buzz = GPIO.PWM(BUZZER, 100000)
-    buzz.start(10)
+    #buzz = GPIO.PWM(BUZZER, 100000)
+    #buzz.start(10)
 
     # Configuration initiale config.ini
     config('config.ini')
