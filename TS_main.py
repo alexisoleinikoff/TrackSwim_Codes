@@ -33,8 +33,8 @@ if __name__ == '__main__':
     BUZZER = 12
     CLK_GREEN = 8
     DIO_GREEN = 25
-    CLK_BLUE = 23
-    DIO_BLUE = 24
+    CLK_BLUE = 24
+    DIO_BLUE = 23
 
     T_UPDATE_SCREEN = 30 #ms
     T_BLANK_SCREEN = 1000 #ms
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     # Interuption sur le bouton 4
     GPIO.setup(BUTTON4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(BUTTON4, GPIO.RISING, 
-                callback=switch_module_state, bouncetime=ANTI_BOUNCE)
+                callback=quit_script, bouncetime=ANTI_BOUNCE)
 
     # Buzzer
     GPIO.setup(BUZZER, GPIO.OUT)
