@@ -364,6 +364,9 @@ def switch_module_state(channel):
 
     TS_var.etat_module = not TS_var.etat_module
 
+def quit_script(channel):
+    TS_var.quit_var = True
+
 class six_digits():
     def __init__(self, CLK_BLUE, DIO_BLUE, CLK_GREEN, DIO_GREEN):
         self.blank_screen = millis()

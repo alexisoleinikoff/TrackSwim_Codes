@@ -21,16 +21,20 @@ if __name__ == '__main__':
     # /!\ Valeurs correspondent au numéro GPIO du pin
     # et non pas au numéro du pin
     LED_YELLOW = 4
-    LED_BLUE = 27
-    BUTTON1 = 17
-    BUTTON2 = 22
-    BUTTON3 = 25
-    ENABLE =  8
-    BUZZER = 18
-    CLK_GREEN = 3
-    DIO_GREEN = 2
-    CLK_BLUE = 24
-    DIO_BLUE = 23
+    LED_BLUE = 3
+    RGB_R = 17
+    RGB_G = 27
+    RGB_B = 22
+    BUTTON1 = 5
+    BUTTON2 = 6
+    BUTTON3 = 13
+    BUTTON4 = 19
+    ENABLE = 2
+    BUZZER = 12
+    CLK_GREEN = 8
+    DIO_GREEN = 25
+    CLK_BLUE = 23
+    DIO_BLUE = 24
 
     T_UPDATE_SCREEN = 30 #ms
     T_BLANK_SCREEN = 1000 #ms
@@ -58,7 +62,7 @@ if __name__ == '__main__':
     GPIO.setup(ENABLE, GPIO.LOW)
 
     # Leds
-    TS_var.led_wifi= rgb(10, 9, 11)
+    TS_var.led_wifi= rgb(RGB_R, RGB_G, RGB_B)
     GPIO.setup(LED_YELLOW, GPIO.OUT)
     GPIO.setup(LED_BLUE, GPIO.OUT)
     GPIO.output(LED_BLUE, GPIO.LOW)
@@ -79,10 +83,15 @@ if __name__ == '__main__':
     GPIO.add_event_detect(BUTTON3, GPIO.FALLING, 
                 callback=switch_module_state, bouncetime=ANTI_BOUNCE)
 
+    # Interuption sur le bouton 4
+    GPIO.setup(BUTTON4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(BUTTON4, GPIO.RISING, 
+                callback=switch_module_state, bouncetime=ANTI_BOUNCE)
+
     # Buzzer
     GPIO.setup(BUZZER, GPIO.OUT)
-    #buzz = GPIO.PWM(BUZZER, 100000)
-    #buzz.start(10)
+    buzz = GPIO.PWM(BUZZER, 100000)
+    buzz.start(10)
 
     # Configuration initiale config.ini
     config('config.ini')
@@ -160,6 +169,14 @@ if __name__ == '__main__':
             else: 
                 tag_data.manage_tags(ENABLE, MIN_READ_POWER, ecrans)
 
+
+            # Quitter le programme si le bouton 4 (allumer/éteindre) est appuyé
+            if TS_var.quit_var:
+                t.join()
+                ecrans.display_tmb('000000')
+                ecrans.display_tmg('000000')
+                GPIO.cleanup()
+                quit()
 
             time.sleep(0.01) #dors 10 ms -> réduction de fréquence et gain en durée de vie de batterie
     except KeyboardInterrupt:

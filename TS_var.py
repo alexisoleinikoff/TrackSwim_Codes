@@ -17,5 +17,7 @@ old_etat_module = False
 button2timer = 0
 etat_ajout_tag = 0 # 0 : Ne rien faire, 1 : Scanner un tag et enregistrer, 2 : Envoyer la liste des tags
 
+quit_var = False
+
 q = Queue() # variable permettant de récupérer les données du thread parallèle (lecture des tags en continu)
 
