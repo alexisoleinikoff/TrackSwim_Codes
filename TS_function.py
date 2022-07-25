@@ -106,8 +106,9 @@ class Tag_to_DB():
         Retourne : NULL"""
         GPIO.output(LED_BLUE, GPIO.HIGH)
         reader = ini_reader(enable_pin, read_pow)
+        r = reader.read()
         time.sleep(0.1)
-        for tag in reader.read():
+        for tag in r:
             print('EPC : ', tag.epc)
             if self.stock_tag:
                 if not tag.epc in self.stock_tag:
