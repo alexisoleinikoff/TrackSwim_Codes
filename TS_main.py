@@ -145,7 +145,6 @@ if __name__ == '__main__':
                         GPIO.output(LED_YELLOW, GPIO.HIGH)
                         main_data.data_treatment(r, t_min)
                         ecrans.update_displays(r, main_data)
-                        #print('Tag(s) détecté(s). Sessions en cours : [', len(main_data.sessions_list), ']')
 
                     else:
                         GPIO.output(LED_YELLOW, GPIO.LOW)
@@ -158,19 +157,15 @@ if __name__ == '__main__':
                 # Vérification et clôture des sessions
                 if millis() - main_data.time_to_close >= 2*MINUTE:
                     main_data.time_to_close = millis()
-
-                    #print('Commence la clôture de session ...')
                     main_data.close_sessions()
-                    #print('... [', len(main_data.sessions_to_upload), "] sessions ont été fermées et sont prêtes à l'envoi")
                     main_data.upload_closed_sessions()
-                    #print('Envoi terminé. Sessions en cours : [',len(main_data.sessions_list), '] -- Sessions encore à envoyer : [' , len(main_data.sessions_to_upload), ']')
 
             # Mode configuration
             else: 
                 tag_data.manage_tags(ENABLE, MIN_READ_POWER, ecrans)
 
 
-            # Quitter le programme si le bouton 4 (allumer/éteindre) est appuyé
+            # Quitter le programme si le bouton 4 (on/off) est appuyé
             if TS_var.quit_var:
                 t.join()
                 ecrans.display_tmb('000000')

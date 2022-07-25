@@ -365,9 +365,16 @@ def switch_module_state(channel):
     TS_var.etat_module = not TS_var.etat_module
 
 def quit_script(channel):
+    """ Fonction d'appel lors d'une detection d'interuption sur le bouton 4 (on/off).
+    Modifie la variable globale permettant de quitter le script python3
+    Arguments : channel (interrupt)
+    Retourne : NULL """
     TS_var.quit_var = True
 
 class six_digits():
+    """ Classe régissant les afficheurs 6 digit à 7 segments. Dans cette classe, devrait être regroupé
+    tout les écrans utilisés dans le programme. Ses sous fonctions permettent d'écrire et supprimer des informations
+    sur les afficheurs."""
     def __init__(self, CLK_BLUE, DIO_BLUE, CLK_GREEN, DIO_GREEN):
         self.blank_screen = millis()
         self.time_switch_display = millis()
@@ -383,6 +390,10 @@ class six_digits():
         self.tmg.write([0,0,0,0,0,0])
 
     def update_displays(self, TagReadData, data):
+        """Met à jour les valeurs à afficher sur les écrans selon les informations reçues du thread paralèlle (read).
+        La puissance renvoyée par le tag (rssi) permet de déterminer quel nageur est le plus proche du module\n
+        Arguments : LIST TagReadData contenant epc et rssi, LIST data de toutes les sessions en cours
+        Retourne : False si aucun tag n'a été détecté, sinon NULL"""
         rssi_list = []
 
         for tag in TagReadData: # stocker tout les rssis des tags scannés
@@ -400,7 +411,7 @@ class six_digits():
                     l = len(session.arrivee)
                     self.display_tmg(self.millis_to_mmssms(1000*session.depart[l - 1],
                                                             1000*session.arrivee[l - 1]))
-                    if self.display_state:
+                    if self.display_state: # Afficher distance totale ou temps de session
                         self.display_tmb(str(l*2*int(float(TS_var.module[2])))) # distance totale
                     else:
                         self.display_tmb(self.millis_to_hhmmss(1000*session.session_start, millis()))  # temps de session
@@ -411,6 +422,7 @@ class six_digits():
                     self.display_tmb('0')
         
 
+        # Gestion de changement de l'affichage (change chaque 5 secondes)
         if millis() - self.time_switch_display >= 5*SECONDE:
             self.time_switch_display = millis()
             self.display_state = not self.display_state
@@ -418,12 +430,21 @@ class six_digits():
         self.blank_screen = millis()
 
     def display_tmg(self, string):
+        """Affiche une chaîne de charactère sur l'écran vert. Pour une complète des charactères tolérés, consulter tm1637.py
+        Arguments : LIST string a afficher
+        Retourne : NULL"""
         self.tmg.write(self.tmg.encode_string(string))
 
     def display_tmb(self, string):
+        """Affiche une chaîne de charactère sur l'écran bleu. Pour une complète des charactères tolérés, consulter tm1637.py
+        Arguments : LIST string a afficher
+        Retourne : NULL"""
         self.tmb.write(self.tmb.encode_string(string))
 
     def clear_screens(self):
+        """Retire tout charactère des deux écrans
+        Arguments : NULL
+        Retourne : NULL"""
         self.tmb.write([0,0,0,0,0,0])
         self.tmg.write([0,0,0,0,0,0])
 
