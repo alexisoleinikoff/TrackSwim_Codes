@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 ### FICHIER DES FONCTIONS ET CLASSES ###
 
 # Modules standards
@@ -105,6 +106,7 @@ class Tag_to_DB():
         Retourne : NULL"""
         GPIO.output(LED_BLUE, GPIO.HIGH)
         reader = ini_reader(enable_pin, read_pow)
+        time.sleep(0.1)
         for tag in reader.read():
             print('EPC : ', tag.epc)
             if self.stock_tag:

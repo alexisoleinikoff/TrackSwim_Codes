@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-from __future__ import print_function
-from pickle import TRUE
+#from __future__ import print_function
 import sys
 sys.path.append('/home/tspi/.local/lib/python3.9/site-packages') # Lien vers tm1637
 sys.path.append('/home/tspi/.local/lib/python3.9/site-packages/python-mercuryapi') # Lien vers python-mercuryapi
