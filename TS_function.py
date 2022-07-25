@@ -20,14 +20,12 @@ import TS_var
 
 ### Constantes (dupliquées de TS_main.py)
 LED_YELLOW = 4
-LED_BLUE = 27
-LED_WIFI_R = 10
-LED_WIFI_B = 9
-LED_WIFI_G = 11
+LED_BLUE = 3
 
-BUTTON1 = 17
-BUTTON2 = 22
-BUTTON3 = 25
+BUTTON1 = 5
+BUTTON2 = 6
+BUTTON3 = 13
+BUTTON4 = 19
 
 SECONDE = 1000 #ms
 MINUTE = 60000 #ms
