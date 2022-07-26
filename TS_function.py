@@ -51,8 +51,8 @@ class read_continuous(Thread):
 
     def run(self):
         time.sleep(0.4)
-        reader = ini_reader(self.enable_pin, self.read_pow)
         GPIO.output(self.blue_led_pin, GPIO.HIGH)
+        reader = ini_reader(self.enable_pin, self.read_pow)
         r = reader.read()
         time.sleep(0.1)
         GPIO.output(self.enable_pin, GPIO.LOW)
