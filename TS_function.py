@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 ### FICHIER DES FONCTIONS ET CLASSES ###
 
 # Modules standards

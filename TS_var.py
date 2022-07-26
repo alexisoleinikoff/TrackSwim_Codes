@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 ### FICHIER DE VARIABLES GLOBALES ###
 from queue import Queue
 
