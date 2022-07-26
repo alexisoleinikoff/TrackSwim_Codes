@@ -39,6 +39,8 @@ def millis():
     return int(time.time()*1000)
 
 class read_continuous(Thread):
+    """Classe régissant le multi-threading du capteur RFID. A passer dans une variable ex : t = read_continus(arg1, 2, 3)
+    afin de pouvoir utiliser les fonctions intéressantes de la threading librairie (principalement active_count())."""
     def __init__(self, enable_pin, blue_led_pin, read_pow):
         Thread.__init__(self)
         self.enable_pin = enable_pin
@@ -49,14 +51,14 @@ class read_continuous(Thread):
         self.start()
 
     def run(self):
-        time.sleep(0.4)
-        GPIO.output(self.blue_led_pin, GPIO.HIGH)
-        reader = ini_reader(self.enable_pin, self.read_pow)
-        r = reader.read()
-        time.sleep(0.1)
-        GPIO.output(self.enable_pin, GPIO.LOW)
-        GPIO.output(self.blue_led_pin, GPIO.LOW)
-        TS_var.q.put(False) if not r else TS_var.q.put(r)
+        time.sleep(0.4) # Attendre pour le duty cycle
+        GPIO.output(self.blue_led_pin, GPIO.HIGH) # Allumer led bleue
+        reader = ini_reader(self.enable_pin, self.read_pow) # Initialiser le reader
+        r = reader.read() # Effectuer une mesure
+        time.sleep(0.1) # pause de 0.1 s afin de soulager le reader (évite des crash)
+        GPIO.output(self.enable_pin, GPIO.LOW) # Eteindre le reader
+        GPIO.output(self.blue_led_pin, GPIO.LOW) # Eteindre la led bleue
+        TS_var.q.put(False) if not r else TS_var.q.put(r) # Mettre les informations récupérées dans la queue (= False si rien détecté)
 
 
 def ini_reader(enable_pin, read_pow):
