@@ -36,7 +36,7 @@ if __name__ == '__main__':
     DIO_BLUE = 23
 
     T_UPDATE_SCREEN = 30 #ms
-    T_BLANK_SCREEN = 1000 #ms
+    T_BLANK_SCREEN = 2000 #ms
     ANTI_BOUNCE = 200 #ms
     SECONDE = 1000 #ms
     MINUTE = 60000 #ms
