@@ -164,7 +164,7 @@ if __name__ == '__main__':
                 tag_data.manage_tags(ENABLE, MIN_READ_POWER, ecrans)
 
 
-            # Quitter le programme si le bouton 4 (on/off) est appuyé
+            ### QUITTER LE PROGRAMME (BOUTON 4 APPUYE) ###
             if TS_var.quit_var:
                 t.join()
                 ecrans.display_tmb('000000')
