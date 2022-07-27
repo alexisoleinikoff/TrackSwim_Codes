@@ -10,3 +10,5 @@ Les fichiers  présents dans ce git sont les suivants :
 5. launcher.sh : script bash, à exécuter au démarrage du Raspberry Pi
 6. reset_config.ini : Fichier de configuration par défaut
 7. tm1637.py : Fichier modifié afin d'incorporer 2 digits de plus (écris à la base pour 4 digits)
+
+Pour plus d'information concernanant ce git ou le projet en général, se référer au rapport de projet, fourni lors du rendu le 29.07.2022
