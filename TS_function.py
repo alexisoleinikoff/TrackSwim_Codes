@@ -79,7 +79,7 @@ def ini_reader(enable_pin, read_pow):
 
     return reader
 
-class Tag_to_DB():
+class tag_to_DB():
     """Classe régissant les procédures de récolte et d'envoi de nouveaux tags dans la base données.
     Cette classe ne doit être utilisé que pour le rajout de tag et non pas la réception et envoi de données (voir data())"""
     def __init__(self):

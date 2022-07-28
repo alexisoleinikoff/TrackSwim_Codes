@@ -98,7 +98,7 @@ if __name__ == '__main__':
     # Initialisation des écrans et variables de stockage
     ecrans = six_digits(CLK_BLUE, DIO_BLUE, CLK_GREEN, DIO_GREEN)
     main_data = data()
-    tag_data = Tag_to_DB()
+    tag_data = tag_to_DB()
 
     # Calcul du temps minimal pour un aller retour de module[l_piscine] mètres
     # Si un utilisateur réalise un temps plus petit que celui-ci, il n'est pas compté
