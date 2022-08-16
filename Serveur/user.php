@@ -34,7 +34,7 @@
                 die('Erreur : ' . $e->getMessage());
             }
         
-            if($_POST['SESSION_DATE']) {
+            if(!empty($_POST['ID_USER']) and $_POST['SESSION_DATE']) {
                 $SESSION_DATE = $_POST['SESSION_DATE'];
                 $USER_ID = $_POST['ID_USER'];
                 $x = array();
@@ -47,7 +47,7 @@
                 $stringy = "var yValues = [";
             }
             else {
-                die("Erreur, date de session entrée non valide (code : 3)");
+                die("<strong>Erreur</strong><br>Champ(s) manquant(s).<br>");
             }
 
             echo "<h1>Sessions de natation du ".$SESSION_DATE."</h1><BR>";

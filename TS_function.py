@@ -573,14 +573,19 @@ class config():
         with sql:
             with sql.cursor() as cursor:
                 cursor.execute("SELECT Mode, ID_piscine FROM module WHERE ID_module=%s", TS_var.module[0])
+                if not cursor.rowcount: #Si le module n'est pas trouvé, retourner False et prendre sur le fichier de reset
+                    return False
                 r = cursor.fetchone()
                 
                 self.config.set('Module', 'mode', r[0])
                 self.config.set('Module', 'id_piscine', str(r[1]))
 
                 cursor.execute("SELECT Longueur FROM piscine WHERE ID_piscine=%s", r[1])
-                r = cursor.fetchone()
-                self.config.set('Module', 'l_piscine', str(r[0]))
+                if not cursor.rowcount:
+                    return False
+                r = cursor.fetchone()[0]
+
+                self.config.set('Module', 'l_piscine', str(r))
     
         with open(self.name, 'w') as configfile:
             self.config.write(configfile)

@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf8">
-        <title> Administrateur > Visualiser DB piscine</title>
+        <title> Administrateur > Visualiser DB administrateur</title>
         <link rel="stylesheet" href="style.css">
 
         <!-- Script pour l'ouverture de la bannière-->
@@ -35,33 +35,40 @@
 
         <table border="0">
             <TR height="20">
-                <TD width="200" align="left">
-                    <strong>Nom</strong>
+                <TD width="250" align="left">
+                    <strong>Utilisateur</strong>
                 </TD>
-                <TD width="200" align="left">
-                    <strong>Adresse</strong>
+                <TD width="150" align="left">
+                    <strong>ID utilisateur</strong>
                 </TD>
-                <TD width="200" align="left">
-                    <strong>Code postal</strong>
+                <TD width="300" align="left">
+                    <strong>Code produit électronique (EPC)</strong>
                 </TD>
-                <TD width="200" align="left">
-                    <strong>Ville</strong>
+                <TD width="150" align="left">
+                    <strong>ID du bracelet</strong>
                 </TD>
-                <TD width="200" align="left">
-                    <strong>Longueur de bassin</strong>
-                </TD>
-                <TD width="200" align="left">
+                <TD width="150" align="left">
                     <strong>Clé d'identification</strong>
                 </TD>
             </TR>
 
         <?php
-            $piscines = $bdd->query("SELECT * FROM piscine");
-            foreach($piscines as $unepiscine) {
-                echo "<TR><TD>".$unepiscine['Nom']."</TD><TD>".$unepiscine['Adresse']."</TD><TD>"
-                .$unepiscine['Code_postal']."</TD><TD>".$unepiscine['Ville']."</TD><TD>"
-                .$unepiscine['Longueur']."</TD><TD>".$unepiscine['ID_piscine']."</TD><TD></TR>";
-            }
+
+        $listeAssoc = $bdd->query("SELECT * FROM association_utilisateur_tag ORDER BY ID_utilisateur");
+        foreach($listeAssoc as $assoc) {
+            $user = $bdd->query("SELECT Nom, Prenom FROM utilisateur WHERE ID_utilisateur = ".$assoc[0])->fetch();
+            $tag = $bdd->query("SELECT EPC FROM tag WHERE ID_tag = ".$assoc[1])->fetch();
+
+            echo "<TR>
+                <TD>".$user[0]." ".$user[1]."</TD>
+                <TD>".$assoc[0]."</TD>
+                <TD>".$tag[0]."</TD>
+                <TD>".$assoc[1]."</TD>
+                <TD>".$assoc[2]."</TD>
+                </TR>";
+
+        }
+
         ?>
 
         </table>

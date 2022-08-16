@@ -35,7 +35,7 @@
                     En effet, pour ce domaine sportif en particulier, il est relativement difficile de s'auto-évaluer. Les moyens existants <br> sont soit trop couteux (ex: coach privé) soit requièrent l'interruption non désirée de l'activité.<br><br>
                     Pour résoudre cette problématique, une solution a été sélectionnée. Le nageur (utilisateur) est équipé, au poignet, d'un bracelet arborant une puce <a href="https://fr.wikipedia.org/wiki/Radio-identification">RFID</a>.<br>
                     Un module contenant une antenne ainsi qu'un émetteur/récepteur détecte le départ et l'arrivée du sportif à chaque aller-retour.<br>
-                    Ce dernier peut visualiser, au travers d'un écran LCD monté contre le module, son temps actuel et sa longueur totale nagée.<br> De retour chez lui, il peut aussi consulter le <a href="index.php">site officiel du projet</a>, afin d'obtenir un récapitulatif de toutes ses sessions d'entraînement.<br>
+                    Ce dernier peut visualiser, au travers d'un afficheur 7-segments monté contre le module, son temps actuel et sa longueur totale nagée.<br> De retour chez lui, il peut aussi consulter le <a href="index.php">site officiel du projet</a>, afin d'obtenir un récapitulatif de toutes ses sessions d'entraînement.<br>
                 </TD>
             </TR>
             <TR height="20">

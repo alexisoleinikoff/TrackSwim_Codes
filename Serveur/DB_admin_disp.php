@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf8">
-        <title> Administrateur > Visualiser DB utilisateur</title>
+        <title> Administrateur > Visualiser DB administrateur</title>
         <link rel="stylesheet" href="style.css">
 
         <!-- Script pour l'ouverture de la bannière-->
@@ -36,24 +36,20 @@
         <table border="0">
             <TR height="20">
                 <TD width="100" align="left">
-                    <strong>Nom</strong>
+                    <strong>Identifiant</strong>
                 </TD>
                 <TD width="100" align="left">
-                    <strong>Prénom</strong>
+                    <strong>Mot de passe</strong>
                 </TD>
-                <TD width="200" align="left">
-                    <strong>Date de naissance</strong>
-                </TD>
-                <TD width="200" align="left">
+                <TD width="150" align="left">
                     <strong>Clé d'identification</strong>
                 </TD>
             </TR>
 
-
-         <?php
-            $personnes = $bdd->query("SELECT * FROM utilisateur");
-            foreach($personnes as $unepersonne) {
-                echo "<TR><TD>".$unepersonne['Nom']."</TD><TD>".$unepersonne['Prenom']."</TD><TD>".$unepersonne['Date_de_naissance']."</TD><TD>".$unepersonne['ID_utilisateur']."</TD><TD></TR>";
+        <?php
+            $admin = $bdd->query("SELECT * FROM admin");
+            foreach($admin as $unadmin) {
+                echo "<TR><TD>".$unadmin['Identifiant']."</TD><TD>".$unadmin['Mot_de_passe']."</TD><TD>".$unadmin['ID_admin']."</TD></TR>";
             }
         ?>
 

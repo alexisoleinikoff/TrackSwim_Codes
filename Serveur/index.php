@@ -60,6 +60,7 @@
                 <form name="userForm" action="user.php" method="POST">
                     <TD width="250" align="center" >
                         <SELECT name="ID_USER">
+                            <OPTION value='' disabled selected>Utilisateur</OPTION>
                             <?php
                                 $listePersonnes = $bdd->query("SELECT ID_utilisateur, Nom, Prenom FROM utilisateur ORDER BY ID_utilisateur ASC");
 
@@ -67,7 +68,7 @@
                                     echo "<OPTION value='".$row['ID_utilisateur']."'>".$row['Nom']." ".$row['Prenom']."</OPTION>";
                                 }
                             ?>
-                        <SELECT> <BR><BR>
+                        </SELECT> <BR><BR>
                         <input type="date" name="SESSION_DATE"/> <BR><BR>
                         <input type="submit" value="Rechercher" />
                     </TD>

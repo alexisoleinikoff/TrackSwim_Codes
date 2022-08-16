@@ -32,13 +32,23 @@
             {
                 die('Erreur : ' . $e->getMessage());
             }
+
+
+            if (!empty($_POST['TAG_SCH_EPC'])) {
+                $listeTag = $bdd->query("SELECT * FROM tag");
+                while ($tag = $listeTag->fetch()) {
+                    if ($tag[0] == $_POST['TAG_SCH_EPC']) {
+                        die("Bracelet dont l'EPC est [".$_POST['TAG_SCH_EPC']."] porte l'indice d'identification ".$tag[1]);
+                    }
+
+                }
+                die("Aucun indice d'identification n'a pu être trouvé pour cet EPC de bracelet.");
+
+            }
+            else {
+                die("<strong>Erreur</strong><br>Champ(s) manquant(s).");
+            }
+
         ?>
-
-        <table border="0">
-            <TR>
-                <TD>
-                </TD>
-            </TR>
-
-
-        </table>
+    </body>
+</html>

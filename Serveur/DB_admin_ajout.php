@@ -19,7 +19,7 @@
         <!-- Bannière -->
         <div id="includedBanner"></div>
         <center>
-            
+
         <?php
             include 'path_BD.php';
 
@@ -32,26 +32,21 @@
             {
                 die('Erreur : ' . $e->getMessage());
             }
-        ?>
 
-        <table border="0">
-            <TR height="20">
-                <TD width="200" align="left">
-                    <strong>Clé d'identification de l'utilisateur</strong>
-                </TD>
-                <TD width="200" align="left">
-                    <strong>Clé d'identification</strong>
-                </TD>
-            </TR>
-
-         <?php
-            $tags = $bdd->query("SELECT * FROM tag");
-            foreach($tags as $tag) {
-                echo "<TR><TD>".$tag['EPC']."</TD><TD>".$tag['ID_tag']."</TD><TD></TR>";
+            if (!empty($_POST['ADMIN_ADD_ID']) and !empty($_POST['ADMIN_ADD_PASS'])) {
+                $bdd->query("INSERT INTO admin (Identifiant, Mot_de_passe) VALUES ('".$_POST['ADMIN_ADD_ID']."', '".$_POST['ADMIN_ADD_PASS']."')");
+                $newid = $bdd->query("SELECT @@IDENTITY");
+                $newid = $newid->fetch();
+                if (!empty($newid) and $newid[0] != 0) {
+                    echo "<strong>Succès</strong><br>Identifiant propre du nouvel administrateur : ".$newid[0];
+                }
+                else {
+                    die("<strong>Erreur</strong><br>Impossible de créer un nouveau champ.<br>Veuillez vérifier la connexion et réessayez");
+                }
+            }
+            else {
+                die("<strong>Erreur</strong><br>Champ(s) manquant(s).");
             }
         ?>
-
-        </table>
-
     </body>
 </html>
