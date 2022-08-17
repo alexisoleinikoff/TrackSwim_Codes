@@ -74,9 +74,7 @@
                 }
                 else {
                     echo "<strong>Succès</strong><br>Aucun champ n'a dû être mis à jour pour le module dont l'ID propre est ". $_POST['ID_MODULE_TO_UPDATE'] .".<br>";
-                }
-                
-                
+                } 
             }
             else {
                 die("<strong>Erreur</strong><br>Champ(s) manquant(s).<br>");

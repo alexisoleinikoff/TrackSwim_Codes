@@ -37,7 +37,7 @@
                 $i = 0;
                 $listeTag = $bdd->query("SELECT * FROM tag WHERE ID_tag = ".$_POST['ASSOC_ADD_ID_TAG']);
                 if (!($tag = $listeTag->fetch())) {
-                    die("<strong>Erreur</strong><br>Aucun bracelet existant pour cet ID unique.");
+                    die("<strong>Erreur</strong><br>Aucun bracelet n'existe pour l'identifiant propre ".$_POST['ASSOC_ADD_ID_TAG']);
                 }
 
                 # Vérifie si le tag n'est pas déjà associé
@@ -59,6 +59,13 @@
                     Association actuelle avec : ".$assocUser['Nom']." ".$assocUser['Prenom']." (ID de l'association : ".$assoc[2].").<br><br>
                     Veuillez d'abord supprimer cette association, puis réessayer.");
                 }
+
+                # Vérifier si utilisateur existe
+                $user = $bdd->query("SELECT * FROM utilisateur WHERE ID_utilisateur = ".$_POST['ASSOC_ADD_ID_USER']);
+                if (!($user->fetch())) {
+                    die("<strong>Erreur</strong><br>Aucun utilisateur n'existe pour l'identifiant propre ".$_POST['ASSOC_ADD_ID_USER']);
+                }
+
 
                 # Si tout ok, -> associer
                 $bdd->query("INSERT INTO association_utilisateur_tag (ID_utilisateur, ID_tag) VALUES ('".$_POST['ASSOC_ADD_ID_USER']."', '".$_POST['ASSOC_ADD_ID_TAG']."')");

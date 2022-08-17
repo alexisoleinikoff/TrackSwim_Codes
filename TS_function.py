@@ -385,7 +385,7 @@ class six_digits():
         self.tmg = tm1637.TM1637(CLK_GREEN, DIO_GREEN) #GPIO NUM, écran vert, en haut
         self.tmb = tm1637.TM1637(CLK_BLUE, DIO_BLUE) #GPIO NUM, écran bleu, en bas
 
-        self.tmb.brightness(1) # luminosité (de 1 à 7)
+        self.tmb.brightness(7) # luminosité (de 1 à 7)
         self.tmg.brightness(7)
 
         self.tmb.write([0,0,0,0,0,0]) # valeurs initiales (écran vide)

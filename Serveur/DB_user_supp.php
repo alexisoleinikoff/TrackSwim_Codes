@@ -34,11 +34,17 @@
             }
 
             if (!empty($_POST['ID_USER_TO_DELETE'])) {
+                $listeAssoc = $bdd->query("SELECT * FROM association_utilisateur_tag WHERE ID_utilisateur = ".$_POST['ID_USER_TO_DELETE']);
+
+                if (!empty($listeAssoc->fetch())) {
+                    die("<strong>Erreur</strong><br>Impossible de supprimer cet utilisateur. Ce dernier est encore associé à un ou plusieurs bracelets.<br>
+                    Veuillez supprimer ces associations et réessayer.");
+                }
+
                 $bdd->query("DELETE FROM utilisateur WHERE ID_utilisateur = ".$_POST['ID_USER_TO_DELETE']);
-                $bdd->query("DELETE FROM association_utilisateur_tag WHERE ID_utilisateur = ".$_POST['ID_USER_TO_DELETE']);
                 
                 echo "<strong>Succès</strong><br>Utilisateur ".$_POST['ID_USER_TO_DELETE']." correctement supprimé.<br>
-                    Son association avec un bracelet a aussi été supprimée.<br><br>Reste des tables non affecté.";
+                Reste des tables non affecté.";
             }
             else {
                 die("<strong>Erreur</strong><br>Champ(s) manquant(s).<br>");
