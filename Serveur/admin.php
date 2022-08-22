@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf8">
-        <title> Home > Administrateur</title>
+        <title>Home > Administrateur</title>
         <link rel="stylesheet" href="style.css">
 
         <!-- Script pour l'ouverture de la bannière-->
@@ -13,6 +13,7 @@
                 $("#includedBanner").load("banner.html"); 
             });
         </script>
+        <link rel="icon" href="Media\TrackSwim_logo\ts_icon.ico">
     </head>
 
     <body>
@@ -256,9 +257,10 @@
                         </TD>
                     </form>
                 </TR>
+                <!-- 
                 <TR height="40">
                     <TD width="50" colspan="1" align="left">
-                        <!-- Laisser vide pour retrait -->
+                        Laisser vide pour retrait
                     </TD>
                     <form name="suppModuleForm" action="DB_module_supp.php" method="POST">
                         <TD>
@@ -267,7 +269,7 @@
                             <input type="submit" value="Supprimer">
                         </TD>
                     </form>
-                </TR>
+                </TR> -->
 
 
                 <TR height="20">

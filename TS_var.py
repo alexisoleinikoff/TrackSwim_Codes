@@ -1,3 +1,6 @@
+# Fichier rédigé par M. Oleinikoff Alexis dans le cadre du TB TrackSwim
+# Dates : 21.02.2022 au 29.07.2022
+
 ### FICHIER DE VARIABLES GLOBALES ###
 from queue import Queue
 

@@ -12,6 +12,7 @@
                 $("#includedBanner").load("banner.html"); 
             });
         </script>
+        <link rel="icon" href="Media\TrackSwim_logo\ts_icon.ico">
     </head>
 
     <body>
@@ -48,7 +49,17 @@
                     <!-- Laisser vide pour retrait -->
                 </TD>
                 <TD colspan="1" align="left">
-                    a écrire
+                    Le site est divisé en deux sections distinctes : <u>Utilisateur</u> (nageur) et <u>administrateur</u> (gestionnaire).<br>
+                    <h3>→ <u>Utilisateur</u></h3>
+                    L'utilisateur peut utiliser son identifiant (Nom et prénom) afin de visualiser ses performances, à la date sélectionnée.<br>
+                    Ses dernières sont disponibles quelques minutes après l'arrêt de l'entraînement, tant que le bracelet <br>
+                    porté au poignet a été appareilé correctement à l'utilisateur.
+
+                    <h3>→ <u>Administrateur</u></h3>
+                    L'administrateur peut gérer un certains nombre de paramètres liés à la base de données TrackSwim.<br>
+                    En se connectant avec le bon identifiant, l'administrateur a directement accès à la visualisation, création, <br>
+                    modification et suppresion de table dans la base de données.<br><br>
+                    En cliquant sur l'œil à droite du nom de la table, il est possible de la visualiser.
                 </TD>
             </TR>
             <TR height="20">
@@ -61,7 +72,10 @@
                     <!-- Laisser vide pour retrait -->
                 </TD>
                 <TD colspan="1" align="left">
-                    <a href="https://www.pinterest.com/pin/swimming-moms--294915475592537220">Lien vers la source de l'image du logo</a>
+                    <a href="https://www.pinterest.com/pin/swimming-moms--294915475592537220">Lien vers la source de l'image du logo</a><br><br>
+                    <a href="https://www.gsinfo.ch/">Lien vers le site de <strong>GSInformatique</strong></a><br>
+                    <a href="https://heig-vd.ch/">Lien vers le site de l'<strong>HEIG-VD</strong></a><br>
+                    <a href="https://github.com/alexisoleinikoff/TrackSwim_Codes">Lien vers le git du projet</a><br>
                 </TD>
             </TR>
         </table>

@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf8">
-        <title> Administrateur > Visualiser DB piscine</title>
+        <title>Administrateur</title>
         <link rel="stylesheet" href="style.css">
 
         <!-- Script pour l'ouverture de la bannière-->
@@ -13,6 +13,7 @@
                 $("#includedBanner").load("banner.html"); 
             });
         </script>
+        <link rel="icon" href="Media\TrackSwim_logo\ts_icon.ico">
     </head>
 
     <body>

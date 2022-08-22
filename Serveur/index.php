@@ -12,6 +12,7 @@
                 $("#includedBanner").load("banner.html"); 
             });
         </script>
+        <link rel="icon" href="Media\TrackSwim_logo\ts_icon.ico">
     </head>
 
     <body>

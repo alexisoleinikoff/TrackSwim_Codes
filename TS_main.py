@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# Fichier rédigé par M. Oleinikoff Alexis dans le cadre du TB TrackSwim
+# Dates : 21.02.2022 au 29.07.2022
+
 #from __future__ import print_function
 import sys
 sys.path.append('/home/tspi/.local/lib/python3.9/site-packages') # Lien vers tm1637
